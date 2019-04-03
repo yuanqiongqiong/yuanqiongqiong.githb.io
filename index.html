@@ -98,13 +98,13 @@
 
   <meta name="description" content="技术学习，心得分享！">
 <meta property="og:type" content="website">
-<meta property="og:title" content="宸小朔">
+<meta property="og:title" content="宸小朔的博客">
 <meta property="og:url" content="https://yuanqiongqiong.githb.io/index.html">
-<meta property="og:site_name" content="宸小朔">
+<meta property="og:site_name" content="宸小朔的博客">
 <meta property="og:description" content="技术学习，心得分享！">
 <meta property="og:locale" content="zh-Hans">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="宸小朔">
+<meta name="twitter:title" content="宸小朔的博客">
 <meta name="twitter:description" content="技术学习，心得分享！">
 
 
@@ -123,7 +123,7 @@
   };
 </script>
 
-  <title>宸小朔</title>
+  <title>宸小朔的博客</title>
   
 
 
@@ -183,7 +183,7 @@
     <div class="custom-logo-site-title">
       <a href="/yuanqiongqiong.githb.io/" class="brand" rel="start">
         <span class="logo-line-before"><i></i></span>
-        <span class="site-title">宸小朔</span>
+        <span class="site-title">宸小朔的博客</span>
         <span class="logo-line-after"><i></i></span>
       </a>
     </div>
@@ -302,7 +302,7 @@
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="宸小朔">
+      <meta itemprop="name" content="宸小朔的博客">
     </span>
 
     
@@ -313,7 +313,7 @@
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/yuanqiongqiong.githb.io/2019/04/03/test1/" class="post-title-link" itemprop="url">test1</a>
+                <a href="/yuanqiongqiong.githb.io/2019/04/03/test1/" class="post-title-link" itemprop="url">从gc日志学习gc相关知识</a>
               
             
           </h1>
@@ -338,9 +338,13 @@
                 
               
 
-              <time title="Created: 2019-04-03 19:45:10" itemprop="dateCreated datePublished" datetime="2019-04-03T19:45:10+08:00">2019-04-03</time>
+              <time title="Created: 2019-04-03 19:45:10 / Modified: 22:35:01" itemprop="dateCreated datePublished" datetime="2019-04-03T19:45:10+08:00">2019-04-03</time>
             
 
+            
+              
+
+              
             
           </span>
 
@@ -375,7 +379,74 @@
       
         
           
-            
+            <h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>​       最近又对gc有了很大的兴趣，重新对之前gc相关的知识进行学习，其实是看了寒泉子大神gc相关的博客，觉得真的是厉害，这里先记录下如何去阅读gc日志吧。</p>
+<h1 id="gc日志解读"><a href="#gc日志解读" class="headerlink" title="gc日志解读"></a>gc日志解读</h1><h2 id="young-gc-日志"><a href="#young-gc-日志" class="headerlink" title="young gc 日志"></a>young gc 日志</h2><p>我们通过具体的日志进行讲解，如下：</p>
+<p><img src="https://i.bmp.ovh/imgs/2019/04/a6e1021877073145.png" alt>)</p>
+<p>最前面的”Allocation Failure”表示young gc原因，ParNew表示年轻代使用串行多线程垃圾回收器。</p>
+<p>1.表示年轻代垃圾回收期使用的是ParNew;</p>
+<p>2.年轻代回收前使用的大小是81920K;</p>
+<p>3.年轻代回收后使用大小是9566K，可以推断出回收对象大小是81920k-9566k=72354k；</p>
+<p><img src="https://i.bmp.ovh/imgs/2019/04/0f71ecb09d7b9255.png" alt></p>
+<p>5.年轻带垃圾回收的时间；</p>
+<p>6.回收前整个堆的使用大小；</p>
+<p>7.回收后整个堆的使用大小；</p>
+<p>9.这个堆内存回收使用的时间；</p>
+<p>10.指的是gc线程在用户态的时间，如果是多线程的gc算法，该时间是叠加了多线程的时间；</p>
+<p>11.指的是gc线程在内核态的时间，如果是多线程的gc算法，该时间是叠加了多线程的时间；</p>
+<p>12.指的是gc操作从开始到结束的墙钟时间，包括各种非运算的耗时，例如等待磁盘IO，等待线程阻塞，而CPU事件不包括这些事件。我理解这块时间就是gc操作从开始到结束的全部时间。应用程序暂停的时间，对于使用串行垃圾收集时real 大致等于 sys + user; 如下图是使用serial串行垃圾回收算法各部分时间（real 大致等于 sys + user，个人感觉是舍入规则导致不完全相等）。</p>
+<p><img src="https://i.bmp.ovh/imgs/2019/04/212f99d94fc26190.png" alt></p>
+<h2 id="full-gc-（CMS）日志"><a href="#full-gc-（CMS）日志" class="headerlink" title="full gc （CMS）日志"></a>full gc （CMS）日志</h2><p>CMS是老年代垃圾回收算法，由于其避免了长时间的停顿被广泛应用，我们线上老年代都使用的这种算法。下面进行相关讲解：</p>
+<ul>
+<li>阶段一：初始标记（CMS Initial Mark）</li>
+</ul>
+<p>该阶段应用线程会进行一次STW，是CMS算法中两次STW之一，主要工作是：标记GC ROOTS 可达大老年代对象，标记年轻带对象引用的老年代对象。该阶段不会对间接引用对象进行关联，因此该阶段很快。</p>
+<ul>
+<li>阶段二：并发标记（CMS-concurrent-mark）</li>
+</ul>
+<p>该阶段会通过对阶段一标记出的老年带对象进行递归标记，标记处可达的所有对象。该阶段与应用线程是并发执行，因此会出现阶段一种标记的对象引用发生变化，或年轻带对象晋升到老年带，或对象直接分配到老年等情况，在该阶段也会把这些对象所在的Card标记为Dirty，以便在下个阶段处理。</p>
+<ul>
+<li>阶段三：并发预清理（CMS-concurrent-preclean）</li>
+</ul>
+<p>该阶段主要做两件事，一个是处理在并发标记阶段标记的Dirty Card中对象，重新标记引用发生变化的对象；另一个是在并发标记阶段会出现新生代新对象引用老年代对象，这个阶段需要标记这些对象。该阶段和应用线程是并发执行的，可以通过参数CMSPrecleaningEnabled关闭该对象。</p>
+<ul>
+<li>阶段四：可中断预清理（CMS-concurrent-abortable-preclean）</li>
+</ul>
+<p>由于在重新标记阶段会进行CMS中另一次STW，对老年代活跃对象进行重新标记，因此为了减小重新标记阶段阶段STW的时间，在重新标记阶段之前加入该过程进行一定的清理工作。该阶段发生的条件是eden区内存使用量大于CMSScheduleRemarkEdenSizeThreshold，默认是2M。因此该阶段主要工作一个是处理Dirty Card中的对象；另一个是处理年轻带对象，标记活跃的老年代对象。该阶段和应用线程并发进行，会循环执行下去，直到时间达到CMSMaxAbortablePrecleanTime（默认5s）或者次数达到CMSMaxAbortablePrecleanLoops（默认无限制）或者eden区使用率达到CMSScheduleRemarkEdenPenetration（默认50%）。可以知道，该阶段会扫描年轻带对象，如果再该阶段之前进行一次young gc 减小年轻带活跃对象数目，会加快该阶段速度，可以通过参数CMSScavengeBeforeRemark来控制。</p>
+<ul>
+<li>阶段五：重新标记（CMS Final Remark）</li>
+</ul>
+<p>如上所述，该阶段是CMS中另一个STW阶段，需要尽可能的减小该阶段时间，上面的阶段三，阶段四的存在正式为了这一点。该阶段的工作一个是遍历GC ROOTS 进行重新标记，一个是遍历新生代对象重新标记，另一个是遍历Dirty Card重新标记。</p>
+<ul>
+<li>阶段六：清理阶段（CMS-concurrent-sweep）</li>
+</ul>
+<p>该阶段会清理不活跃的老年代对象，该阶段与应用线程并发进行。</p>
+<ul>
+<li>阶段七：重置阶段</li>
+</ul>
+<p>该阶段会重置CMS算法相关的数据结构，为下次gc做准备，该阶段与应用线程并发执行。</p>
+<p>老年代gc回收的相关日志如下，这里不进行解读，容量，时间相关参数和年轻大大致类似。</p>
+<p><code>1.803: [CMS-concurrent-mark-start]
+1.957: [GC (Allocation Failure) 1.958: [ParNew: 92159K-&gt;10239K(92160K), 0.1382680 secs] 565579K-&gt;565578K(1038336K), 0.1383043 secs] [Times: user=0.81 sys=0.05, real=0.14 secs] 
+2.163: [GC (Allocation Failure) 2.163: [ParNew: 92159K-&gt;10239K(92160K), 0.1259734 secs] 647498K-&gt;647496K(1038336K), 0.1260101 secs] [Times: user=0.70 sys=0.04, real=0.12 secs] 
+2157ms
+2.671: [CMS-concurrent-mark: 0.603/0.867 secs] [Times: user=2.77 sys=0.10, real=0.86 secs] 
+2.671: [CMS-concurrent-preclean-start]
+2.842: [CMS-concurrent-preclean: 0.172/0.172 secs] [Times: user=0.17 sys=0.00, real=0.18 secs] 
+2.842: [CMS-concurrent-abortable-preclean-start]
+ CMS: abort preclean due to time 7.996: [CMS-concurrent-abortable-preclean: 2.430/5.153 secs] [Times: user=2.41 sys=0.01, real=5.15 secs] 
+7.996: [GC (CMS Final Remark) [YG occupancy: 28252 K (92160 K)]7.996: [Rescan (parallel) , 0.0047059 secs]8.001: [weak refs processing, 0.0000344 secs]8.001: [class unloading, 0.0002629 secs]8.001: [scrub symbol table, 0.0005571 secs]8.002: [scrub string table, 0.0001773 secs][1 CMS-remark: 637257K(946176K)] 665509K(1038336K), 0.0058199 secs] [Times: user=0.04 sys=0.00, real=0.01 secs] 
+8.002: [CMS-concurrent-sweep-start]
+8.353: [CMS-concurrent-sweep: 0.351/0.351 secs] [Times: user=0.35 sys=0.00, real=0.35 secs] 
+8.353: [CMS-concurrent-reset-start]
+8.356: [CMS-concurrent-reset: 0.003/0.003 secs] [Times: user=0.00 sys=0.00, real=0.00 secs]</code></p>
+<p>full gc是我们比较担心的事情，因为会出现较长的STW，那么什么情况下会触发full gc呢，下面我列出几种情况：</p>
+<ul>
+<li>老年代使用率达到阈值 CMSInitiatingOccupancyFraction（该值默认是92%）；</li>
+<li>新生代晋升担保失败，也就是由于新生代survivor区域大小无法容纳eden区存活的对象，直接晋升到老年代，老年代没有足够空间，需要进行一次full gc。</li>
+<li>代码执行System.gc()并且没有参数ExplicitGCInvokesConcurrent，也会触发full gc；</li>
+<li>jdk1.7及之前还存在永久代时，在开启 CMSClassUnloadingEnabled时，如果永久代的使用率达到阈值 CMSInitiatingPermOccupancyFraction（该值默认是92%）。在jdk1.8及以后永久代被metaspace替代，metaspace区域也是使用cms进行垃圾回收，可以设置该区域发生gc的初始阈值的MetaspaceSize，但是该阈值会一直变化，对该区域参数的相关介绍可以参考<a href="https://mp.weixin.qq.com/s/SsXbRvtvawKDHstFpU4uog" target="_blank" rel="noopener">https://mp.weixin.qq.com/s/SsXbRvtvawKDHstFpU4uog</a> 。</li>
+</ul>
+
           
         
       
@@ -466,6 +537,19 @@
 
               
 
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                    
+                      
+                    
+                    <span class="site-state-item-count">1</span>
+                    <span class="site-state-item-name">tags</span>
+                  
+                </div>
               
             </nav>
           
