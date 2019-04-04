@@ -293,6 +293,189 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://www.yuanqiongqiong.cn/2019/04/04/从String-intern-方法浅谈堆中常量池/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="袁琼琼">
+      <meta itemprop="description" content="技术学习，心得分享！">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="袁琼琼的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/04/04/从String-intern-方法浅谈堆中常量池/" class="post-title-link" itemprop="url">从String.intern()方法浅谈堆中常量池</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2019-04-04 23:27:08 / Modified: 23:32:50" itemprop="dateCreated datePublished" datetime="2019-04-04T23:27:08+08:00">2019-04-04</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>​       String是我们最常用的一个类，和普通java类一样其对象会存在java堆中。但是String类有其特殊之处，可以通过new方法生成，也可以通过带引号的字符串常量直接赋值。在JDK7之前，字符串常量是存在永久带Perm 区的，JDK7开始在将常量池迁移到堆中，这个变化也导致了String的新特性，下面我们慢慢进行介绍。</p>
+<h1 id="String-intern-方法"><a href="#String-intern-方法" class="headerlink" title="String.intern()方法"></a>String.intern()方法</h1><p>简单的说，String.intern()方法的作用就是返回常量池中字符串对象，在对该方法进行详解之前，我们看几个创建字符串对象的例子。以下说明及运行结果都是以JDK8为java环境。</p>
+<p>（1）直接赋值字符串常量</p>
+<p>​      这种方式会判断常量池中是否存在字符串常量，如果存在返回该常量对象，否则在常量池中创建常量对象并返回。</p>
+<p><code>//在常量池中创建常量“abc”，s1,s2指向常量池中对象地址        
+String s1 = &quot;abc&quot;;
+String s2 = &quot;abc&quot;;
+System.out.println(s1 == s2);//true</code></p>
+<p>（2）通过new关键字创建</p>
+<p>​      这种方式会在堆上创建String对象，如果常量池中没有该常量，将常量加入常量池中。</p>
+<p><code>//在堆上创建对象S3,S4,常量池中创建对象“abc”
+String s3 = new String(&quot;abc&quot;);
+String s4 = new String(&quot;abc&quot;);
+System.out.println(s3 == s4);//false</code></p>
+<p>（3）字符串常量相加</p>
+<p>​       这种方式如s5，会在常量池中创建”cd”,”ef”,”cdef”三个对象，s5指向常量池中的”cdef”对象。</p>
+<p><code>String s5 = &quot;cd&quot; + &quot;ef&quot;;
+String s6 = &quot;cdef&quot;;
+System.out.println(s5==s6);//true</code></p>
+<p>（4）两个new的String对象相加</p>
+<p>​      这种方式如s7，会在堆中创建三个对象”gh”对象，”lm”对象，以及”ghlm”对象，在常量池中创建对象”gh”,”lm”。</p>
+<p><code>String s7 = new String(&quot;gh&quot;) + new String(&quot;lm&quot;);
+String s8 = &quot;ghlm&quot;;
+System.out.println(s7==s8);//false</code></p>
+<p>（5）字符串常量与new的String对象相加</p>
+<p>​     这种方式如s9，会在堆中创建两个对象“op”，“mnop”，并将字符串常量“op”, “mn”加到常量池中。</p>
+<p><code>String s9 = &quot;mn&quot; + new String(&quot;op&quot;);
+String s10 = &quot;mnop&quot;;
+System.out.println(s9==s10);//false</code></p>
+<p>​     了解字符串常量的创建及其在内存中的存储，我们看native方法intern()的作用：判断String对象的常量值是否存在于常量池中，如果存在并且是常量池对象，返回该常量池对象；如果存在并且是指向堆中的对象，返回堆中对象地址；如果不存在，则将对象的引用复制到常量池，并返回该对象的引用。下面我们看几条语句的运行结果，第一个输出之所以为true，</p>
+<p><code>String s11 = new String(&quot;a&quot;) + new String(&quot;a&quot;);
+s11.intern();//由于常量池中无“aa”,因此在常量池中建“aa”的引用,指向堆中的s11
+String s12 = &quot;aa&quot;;//s12指向常量池中的对象（该对象指向S11）
+System.out.println(s11 == s12.intern());//true
+String s13 = new String(&quot;b&quot;);
+s13.intern();//常量池中已经有“b”了，不做任何操作
+String s14 = &quot;b&quot;;
+System.out.println(s13==s14.intern());//false</code></p>
+<p>​      如果理解了以上运行的结果，对intern()方法的左右就掌握的差不多了。那么久可以开始我们的主题，string pool，字符串常量池。</p>
+<h1 id="字符串常量池"><a href="#字符串常量池" class="headerlink" title="字符串常量池"></a>字符串常量池</h1><p>​       字符串常量池是jvm为了减小内存开销而在创建字符串对象时的一个优化，类似缓冲区。在hotspot中，字符串常量池是一个叫做StringTable的HashTable，默认长度是1009，在JDK7开始可以通过”-XX:StringTableSize=1009” 参数来设置，字符串常量池数据可以被gc回收（在JDK6及其以前，字符串常量存在永久带无法被gc回收，如果添加太多字符串常量到该区域，容易发生OOM）。由于字符串常量池是利用HashTable实现，因此一定会发生hash碰撞。jvm在这方面做了一定优化，会根据hashTable的碰撞情况来决定是否做rehash，当从这个StringTable里查找某个字符串是否存在，如果对其对应的桶链表进行遍历，遍历超过了100个节点还是没有找到，那就会设置一个flag，让下次进入到safepoint的时候做一次rehash动作，尽量减少碰撞的发生。当然，在数据量比较大的情况下，这也无法从根本上解决问题，只能设置StringTableSize的值来缓解。</p>
+<p>​       由于JDK7开始字符串常量池在堆中分布，所以young gc过程会扫描该区域，以保证处于新生代的String对象不会被回收掉，因此如果字符串常量区非常庞大会导致young gc过程扫描的时间也会变长。但是，young gc阶段并不会对字符串常量区进行回收，具体回收阶段是在Full gc或者CMS gc阶段（题外话：我觉得full gc这个名字并不是很好，容易理解为对所有区域进行回收，其实full GC是对老年代的STW的gc，full gc的次数是老年代gc的STW次数，时间是老年代STW的总时间）。</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://www.yuanqiongqiong.cn/2019/04/04/gc定义解析/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -684,7 +867,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">2</span>
+                    <span class="site-state-item-count">3</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
