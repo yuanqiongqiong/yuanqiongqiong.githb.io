@@ -104,14 +104,14 @@
 
 
   <meta name="description" content="简介​       String是我们最常用的一个类，和普通java类一样其对象会存在java堆中。但是String类有其特殊之处，可以通过new方法生成，也可以通过带引号的字符串常量直接赋值。在JDK7之前，字符串常量是存在永久带Perm 区的，JDK7开始在将常量池迁移到堆中，这个变化也导致了String的新特性，下面我们慢慢进行介绍。 String.intern()方法简单的说，String">
-<meta name="keywords" content="jvm">
+<meta name="keywords" content="jvm,java">
 <meta property="og:type" content="article">
 <meta property="og:title" content="从String.intern()方法浅谈堆中常量池">
 <meta property="og:url" content="https://www.yuanqiongqiong.cn/2019/04/04/从String-intern-方法浅谈堆中常量池/index.html">
 <meta property="og:site_name" content="袁琼琼的博客">
 <meta property="og:description" content="简介​       String是我们最常用的一个类，和普通java类一样其对象会存在java堆中。但是String类有其特殊之处，可以通过new方法生成，也可以通过带引号的字符串常量直接赋值。在JDK7之前，字符串常量是存在永久带Perm 区的，JDK7开始在将常量池迁移到堆中，这个变化也导致了String的新特性，下面我们慢慢进行介绍。 String.intern()方法简单的说，String">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-04-04T15:32:50.000Z">
+<meta property="og:updated_time" content="2019-04-05T05:41:58.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="从String.intern()方法浅谈堆中常量池">
 <meta name="twitter:description" content="简介​       String是我们最常用的一个类，和普通java类一样其对象会存在java堆中。但是String类有其特殊之处，可以通过new方法生成，也可以通过带引号的字符串常量直接赋值。在JDK7之前，字符串常量是存在永久带Perm 区的，JDK7开始在将常量池迁移到堆中，这个变化也导致了String的新特性，下面我们慢慢进行介绍。 String.intern()方法简单的说，String">
@@ -224,7 +224,7 @@
         
         
           
-          <li class="menu-item menu-item-home">
+          <li class="menu-item menu-item-首页">
 
     
     
@@ -234,14 +234,14 @@
 
     
 
-    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>Home</a>
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
 
   </li>
         
         
         
           
-          <li class="menu-item menu-item-about">
+          <li class="menu-item menu-item-关于">
 
     
     
@@ -251,14 +251,14 @@
 
     
 
-    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>About</a>
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
 
   </li>
         
         
         
           
-          <li class="menu-item menu-item-tags">
+          <li class="menu-item menu-item-标签">
 
     
     
@@ -268,14 +268,14 @@
 
     
 
-    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>Tags</a>
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
 
   </li>
         
         
         
           
-          <li class="menu-item menu-item-categories">
+          <li class="menu-item menu-item-分类">
 
     
     
@@ -285,14 +285,14 @@
 
     
 
-    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>Categories</a>
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
 
   </li>
         
         
         
           
-          <li class="menu-item menu-item-archives">
+          <li class="menu-item menu-item-归档">
 
     
     
@@ -302,7 +302,7 @@
 
     
 
-    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>Archives</a>
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
 
   </li>
 
@@ -397,16 +397,46 @@
                 
               
 
-              <time title="Created: 2019-04-04 23:27:08 / Modified: 23:32:50" itemprop="dateCreated datePublished" datetime="2019-04-04T23:27:08+08:00">2019-04-04</time>
+              <time title="Created: 2019-04-04 23:27:08" itemprop="dateCreated datePublished" datetime="2019-04-04T23:27:08+08:00">2019-04-04</time>
             
 
             
               
 
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2019-04-05 13:41:58" itemprop="dateModified" datetime="2019-04-05T13:41:58+08:00">2019-04-05</time>
               
             
           </span>
 
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/jvm/" itemprop="url" rel="index"><span itemprop="name">jvm</span></a></span>
+
+                
+                
+              
+            </span>
           
 
           
@@ -509,6 +539,8 @@ System.out.println(s13==s14.intern());//false</code></p>
           
             <a href="/tags/jvm/" rel="tag"># jvm</a>
           
+            <a href="/tags/java/" rel="tag"># java</a>
+          
         </div>
       
 
@@ -597,7 +629,7 @@ System.out.println(s13==s14.intern());//false</code></p>
               
                 <div class="site-state-item site-state-posts">
                 
-                  <a href="/archives/">
+                  <a href="/archives">
                 
                     <span class="site-state-item-count">3</span>
                     <span class="site-state-item-name">posts</span>
@@ -606,6 +638,23 @@ System.out.println(s13==s14.intern());//false</code></p>
               
 
               
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                    <span class="site-state-item-count">1</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
 
               
                 
@@ -613,12 +662,18 @@ System.out.println(s13==s14.intern());//false</code></p>
                 <div class="site-state-item site-state-tags">
                   
                     
+                      <a href="/tags/">
+                    
+                  
+                    
                     
                       
                     
-                    <span class="site-state-item-count">1</span>
+                      
+                    
+                    <span class="site-state-item-count">2</span>
                     <span class="site-state-item-name">tags</span>
-                  
+                  </a>
                 </div>
               
             </nav>
@@ -682,12 +737,7 @@ System.out.println(s13==s14.intern());//false</code></p>
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
-<div class="powered-by">
-<i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">
-  本站访客数:<span id="busuanzi_value_site_uv"></span>
-</span>
-</div>
+        
 <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
   <span class="with-love" id="animate">
     <i class="fa fa-user"></i>
