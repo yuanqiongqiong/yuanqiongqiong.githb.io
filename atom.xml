@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://www.yuanqiongqiong.cn/"/>
-  <updated>2019-04-05T05:41:58.000Z</updated>
+  <updated>2019-04-05T14:50:00.000Z</updated>
   <id>https://www.yuanqiongqiong.cn/</id>
   
   <author>
@@ -15,6 +15,33 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>MAT中指标解释</title>
+    <link href="https://www.yuanqiongqiong.cn/2019/04/05/MAT%E4%B8%AD%E6%8C%87%E6%A0%87%E8%A7%A3%E9%87%8A/"/>
+    <id>https://www.yuanqiongqiong.cn/2019/04/05/MAT中指标解释/</id>
+    <published>2019-04-05T14:46:40.000Z</published>
+    <updated>2019-04-05T14:50:00.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>​       在用MAT进行内存快照分析时会看到有两个指标Shallow Heap和Retained Heap，下面给出这两个指标的含义：</p><p>（1）Shallow Heap</p><p>​       中文释义“表面上的堆大小”指的是对象本身占有内存的大小，不包含其引用对象的大小。常规对象该指标是对象的数量和类型的大小决定，数据则由类型的大小和数据的长度决定。</p><p>（2）Retained Heap</p><p>​       中文释义“持有的堆的大小”指的是当该对象被回收时那些将被回收的对象集合多有对象大小叠加的大小（包括其本身大小）。例如有一个ArrayList持有10个对象，每个对象带下是4bytes，其本身的大小是X，那么其Retained Heap则为10 * 4 + X。</p><p>下面给出MAT中相关截图：</p><p><img src="/2019/04/05/MAT中指标解释/mat.png" alt></p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;p&gt;​       在用MAT进行内存快照分析时会看到有两个指标Shallow Heap和Retained Heap，下面给出这两个指标的含义：&lt;/p&gt;
+&lt;p&gt;（1）Shallow Heap&lt;/p&gt;
+&lt;p&gt;​       中文释义“表面上的堆大小”指的是对象本身占有内存的大小，
+      
+    
+    </summary>
+    
+      <category term="jvm" scheme="https://www.yuanqiongqiong.cn/categories/jvm/"/>
+    
+    
+      <category term="jvm" scheme="https://www.yuanqiongqiong.cn/tags/jvm/"/>
+    
+  </entry>
   
   <entry>
     <title>从String.intern()方法浅谈堆中常量池</title>
