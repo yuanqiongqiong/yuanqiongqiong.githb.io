@@ -104,7 +104,7 @@
 
 
   <meta name="description" content="概述​       在使用java多线程解决问题的时候，为了提高效率，我们常常会异步处理一些计算任务并在最后异步的获取计算结果，这个过程的实现离不开Future接口及其实现类FutureTask。FutureTask类实现了Runnable, Future接口，接下来我会通过源码对该类的实现进行详解。 使用​       我们先看下FutureTask中的主要方法如下，可以看出FutureTask">
-<meta name="keywords" content="-java -多线程 -并发">
+<meta name="keywords" content="java,多线程,并发">
 <meta property="og:type" content="article">
 <meta property="og:title" content="谈谈FutureTask的实现">
 <meta property="og:url" content="https://www.yuanqiongqiong.cn/2019/04/08/谈谈FutureTask的实现/index.html">
@@ -112,7 +112,7 @@
 <meta property="og:description" content="概述​       在使用java多线程解决问题的时候，为了提高效率，我们常常会异步处理一些计算任务并在最后异步的获取计算结果，这个过程的实现离不开Future接口及其实现类FutureTask。FutureTask类实现了Runnable, Future接口，接下来我会通过源码对该类的实现进行详解。 使用​       我们先看下FutureTask中的主要方法如下，可以看出FutureTask">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://www.yuanqiongqiong.cn/2019/04/08/谈谈FutureTask的实现/futureTask等待队列.png">
-<meta property="og:updated_time" content="2019-04-09T05:18:45.000Z">
+<meta property="og:updated_time" content="2019-04-09T05:35:32.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="谈谈FutureTask的实现">
 <meta name="twitter:description" content="概述​       在使用java多线程解决问题的时候，为了提高效率，我们常常会异步处理一些计算任务并在最后异步的获取计算结果，这个过程的实现离不开Future接口及其实现类FutureTask。FutureTask类实现了Runnable, Future接口，接下来我会通过源码对该类的实现进行详解。 使用​       我们先看下FutureTask中的主要方法如下，可以看出FutureTask">
@@ -416,7 +416,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2019-04-09 13:18:45" itemprop="dateModified" datetime="2019-04-09T13:18:45+08:00">2019-04-09</time>
+                <time title="Modified: 2019-04-09 13:35:32" itemprop="dateModified" datetime="2019-04-09T13:35:32+08:00">2019-04-09</time>
               
             
           </span>
@@ -561,7 +561,11 @@ result is 3</code></p>
       
         <div class="post-tags">
           
-            <a href="/tags/java-多线程-并发/" rel="tag"># -java -多线程 -并发</a>
+            <a href="/tags/java/" rel="tag"># java</a>
+          
+            <a href="/tags/多线程/" rel="tag"># 多线程</a>
+          
+            <a href="/tags/并发/" rel="tag"># 并发</a>
           
         </div>
       
@@ -703,7 +707,9 @@ result is 3</code></p>
                     
                       
                     
-                    <span class="site-state-item-count">3</span>
+                      
+                    
+                    <span class="site-state-item-count">4</span>
                     <span class="site-state-item-name">tags</span>
                   </a>
                 </div>
