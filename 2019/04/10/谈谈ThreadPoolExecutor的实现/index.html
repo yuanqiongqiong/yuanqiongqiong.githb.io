@@ -103,16 +103,18 @@
 
 
 
-  <meta name="description" content="技术学习，心得分享！">
-<meta property="og:type" content="website">
-<meta property="og:title" content="袁琼琼的博客">
-<meta property="og:url" content="https://www.yuanqiongqiong.cn/categories/java/index.html">
+  <meta name="description" content="概述​      线程作为系统稀缺资源，如果在应用中进行频繁的创建和销毁，会为我们的应用带来灾难性的体验，增大系统负荷，降低效率。池化技术为该问题的解决提供了一种有效的思路，通过建立一个线程池，每次线程的时候从池中取出一个空闲的线程，这样就省去了线程创建和销毁。java的线程池实现是在jdk1.5开始引入的，本文将对其中最常用的ThreadPoolExecutor的实现进行详细的介绍，系统可以通过">
+<meta name="keywords" content="java,多线程,并发">
+<meta property="og:type" content="article">
+<meta property="og:title" content="谈谈ThreadPoolExecutor的实现">
+<meta property="og:url" content="https://www.yuanqiongqiong.cn/2019/04/10/谈谈ThreadPoolExecutor的实现/index.html">
 <meta property="og:site_name" content="袁琼琼的博客">
-<meta property="og:description" content="技术学习，心得分享！">
+<meta property="og:description" content="概述​      线程作为系统稀缺资源，如果在应用中进行频繁的创建和销毁，会为我们的应用带来灾难性的体验，增大系统负荷，降低效率。池化技术为该问题的解决提供了一种有效的思路，通过建立一个线程池，每次线程的时候从池中取出一个空闲的线程，这样就省去了线程创建和销毁。java的线程池实现是在jdk1.5开始引入的，本文将对其中最常用的ThreadPoolExecutor的实现进行详细的介绍，系统可以通过">
 <meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-04-10T03:11:32.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="袁琼琼的博客">
-<meta name="twitter:description" content="技术学习，心得分享！">
+<meta name="twitter:title" content="谈谈ThreadPoolExecutor的实现">
+<meta name="twitter:description" content="概述​      线程作为系统稀缺资源，如果在应用中进行频繁的创建和销毁，会为我们的应用带来灾难性的体验，增大系统负荷，降低效率。池化技术为该问题的解决提供了一种有效的思路，通过建立一个线程池，每次线程的时候从池中取出一个空闲的线程，这样就省去了线程创建和销毁。java的线程池实现是在jdk1.5开始引入的，本文将对其中最常用的ThreadPoolExecutor的实现进行详细的介绍，系统可以通过">
 
 
 
@@ -122,7 +124,7 @@
 
   
   
-  <link rel="canonical" href="https://www.yuanqiongqiong.cn/categories/java/">
+  <link rel="canonical" href="https://www.yuanqiongqiong.cn/2019/04/10/谈谈ThreadPoolExecutor的实现/">
 
 
 
@@ -132,7 +134,7 @@
   };
 </script>
 
-  <title>Category: java | 袁琼琼的博客</title>
+  <title>谈谈ThreadPoolExecutor的实现 | 袁琼琼的博客</title>
   
 
 
@@ -180,7 +182,7 @@
     
   
 
-  <div class="container sidebar-position-left ">
+  <div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -273,7 +275,7 @@
         
         
           
-          <li class="menu-item menu-item-分类 menu-item-active">
+          <li class="menu-item menu-item-分类">
 
     
     
@@ -312,28 +314,6 @@
   
     
 
-    
-    
-      
-      
-    
-      
-      
-    
-      
-      
-    
-      
-      
-    
-      
-      
-    
-    
-
-  
-
-
   
 
   
@@ -358,57 +338,244 @@
           <div id="content" class="content">
             
 
-  
-  
-  
-  <div class="post-block category">
+  <div id="posts" class="posts-expand">
+    
 
-    <div id="posts" class="posts-collapse">
-      <div class="collection-title">
-        <h1>java<small>Category</small>
-        </h1>
-      </div>
+  
 
-      
-        
+  
+  
+  
+
+  
 
   <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://www.yuanqiongqiong.cn/2019/04/10/谈谈ThreadPoolExecutor的实现/">
 
-      <h2 class="post-title">
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="袁琼琼">
+      <meta itemprop="description" content="技术学习，心得分享！">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="袁琼琼的博客">
+    </span>
+
+    
+      <header class="post-header">
+
         
-          <a class="post-title-link" href="/2019/04/06/从java类加载机制解析变量初始化/" itemprop="url">
-            
-              <span itemprop="name">从java类加载机制解析变量初始化</span>
-            
-          </a>
         
-      </h2>
+          <h1 class="post-title" itemprop="name headline">谈谈ThreadPoolExecutor的实现
 
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated" datetime="2019-04-06T10:41:41+08:00" content="2019-04-06">
-          04-06
-        </time>
-      </div>
+              
+            
+          </h1>
+        
 
-    </header>
-  </article>
+        <div class="post-meta">
+          <span class="post-time">
 
+            
+            
+            
 
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2019-04-10 10:40:40 / Modified: 11:11:32" itemprop="dateCreated datePublished" datetime="2019-04-10T10:40:40+08:00">2019-04-10</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java多线程/" itemprop="url" rel="index"><span itemprop="name">java多线程</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+              
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">Comments: </span>
+                <a href="/2019/04/10/谈谈ThreadPoolExecutor的实现/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/04/10/谈谈ThreadPoolExecutor的实现/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon">
+            <i class="fa fa-eye"></i>
+             Views:  
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>​      线程作为系统稀缺资源，如果在应用中进行频繁的创建和销毁，会为我们的应用带来灾难性的体验，增大系统负荷，降低效率。池化技术为该问题的解决提供了一种有效的思路，通过建立一个线程池，每次线程的时候从池中取出一个空闲的线程，这样就省去了线程创建和销毁。java的线程池实现是在jdk1.5开始引入的，本文将对其中最常用的ThreadPoolExecutor的实现进行详细的介绍，系统可以通过本文了解到如何去实现一个线程池，并向Doug Lea大神致敬。</p>
+<h1 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h1><h1 id="实现分析"><a href="#实现分析" class="headerlink" title="实现分析"></a>实现分析</h1>
       
     </div>
 
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+      <div>
+        <div id="reward-container">
+  <div>多谢支持，共同成长！</div>
+  <button id="reward-button" disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    Donate
+  </button>
+  <div id="qr" style="display: none;">
+
+    
+      
+      
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/wechatPay.jpeg" alt="袁琼琼 WeChat Pay">
+        <p>WeChat Pay</p>
+      </div>
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/java/" rel="tag"># java</a>
+          
+            <a href="/tags/多线程/" rel="tag"># 多线程</a>
+          
+            <a href="/tags/并发/" rel="tag"># 并发</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/04/08/谈谈FutureTask的实现/" rel="next" title="谈谈FutureTask的实现">
+                <i class="fa fa-chevron-left"></i> 谈谈FutureTask的实现
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
   </div>
   
   
   
+  </article>
 
-  
 
+  </div>
 
 
           </div>
           
+
+  
+    <div class="comments" id="comments">
+    </div>
+
+  
+
+
 
         </div>
         
@@ -428,8 +595,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
 
-      <div class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <div class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -546,6 +722,23 @@
         </div>
       </div>
 
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#概述"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#使用"><span class="nav-number">2.</span> <span class="nav-text">使用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#实现分析"><span class="nav-number">3.</span> <span class="nav-text">实现分析</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
       
 
       
@@ -703,6 +896,10 @@
 
 
   
+  <script src="/js/scrollspy.js?v=7.1.0"></script>
+<script src="/js/post-details.js?v=7.1.0"></script>
+
+
 
   
 
@@ -748,6 +945,8 @@
 
 
 
+
+  
 
 
   

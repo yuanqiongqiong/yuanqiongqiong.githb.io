@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://www.yuanqiongqiong.cn/"/>
-  <updated>2019-04-09T05:35:32.000Z</updated>
+  <updated>2019-04-10T03:11:32.000Z</updated>
   <id>https://www.yuanqiongqiong.cn/</id>
   
   <author>
@@ -15,6 +15,35 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>谈谈ThreadPoolExecutor的实现</title>
+    <link href="https://www.yuanqiongqiong.cn/2019/04/10/%E8%B0%88%E8%B0%88ThreadPoolExecutor%E7%9A%84%E5%AE%9E%E7%8E%B0/"/>
+    <id>https://www.yuanqiongqiong.cn/2019/04/10/谈谈ThreadPoolExecutor的实现/</id>
+    <published>2019-04-10T02:40:40.000Z</published>
+    <updated>2019-04-10T03:11:32.000Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>​      线程作为系统稀缺资源，如果在应用中进行频繁的创建和销毁，会为我们的应用带来灾难性的体验，增大系统负荷，降低效率。池化技术为该问题的解决提供了一种有效的思路，通过建立一个线程池，每次线程的时候从池中取出一个空闲的线程，这样就省去了线程创建和销毁。java的线程池实现是在jdk1.5开始引入的，本文将对其中最常用的ThreadPoolExecutor的实现进行详细的介绍，系统可以通过本文了解到如何去实现一个线程池，并向Doug Lea大神致敬。</p><h1 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h1><h1 id="实现分析"><a href="#实现分析" class="headerlink" title="实现分析"></a>实现分析</h1>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h1 id=&quot;概述&quot;&gt;&lt;a href=&quot;#概述&quot; class=&quot;headerlink&quot; title=&quot;概述&quot;&gt;&lt;/a&gt;概述&lt;/h1&gt;&lt;p&gt;​      线程作为系统稀缺资源，如果在应用中进行频繁的创建和销毁，会为我们的应用带来灾难性的体验，增大系统负荷，降低效率。池化技术为该问
+      
+    
+    </summary>
+    
+      <category term="java多线程" scheme="https://www.yuanqiongqiong.cn/categories/java%E5%A4%9A%E7%BA%BF%E7%A8%8B/"/>
+    
+    
+      <category term="java" scheme="https://www.yuanqiongqiong.cn/tags/java/"/>
+    
+      <category term="多线程" scheme="https://www.yuanqiongqiong.cn/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/"/>
+    
+      <category term="并发" scheme="https://www.yuanqiongqiong.cn/tags/%E5%B9%B6%E5%8F%91/"/>
+    
+  </entry>
   
   <entry>
     <title>谈谈FutureTask的实现</title>
