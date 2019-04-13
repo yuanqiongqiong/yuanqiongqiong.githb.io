@@ -103,18 +103,18 @@
 
 
 
-  <meta name="description" content="简介​       String是我们最常用的一个类，和普通java类一样其对象会存在java堆中。但是String类有其特殊之处，可以通过new方法生成，也可以通过带引号的字符串常量直接赋值。在JDK7之前，字符串常量是存在永久带Perm 区的，JDK7开始在将常量池迁移到堆中，这个变化也导致了String的新特性，下面我们慢慢进行介绍。 String.intern()方法简单的说，String">
-<meta name="keywords" content="jvm,java">
+  <meta name="description" content="概述​      今天看到一个很值得深思的问题”为什么wait()，notify()，notifyAll()方法需要在同步块中执行？“，我的第一反应是wait()方法功能就是释放对象锁进行等待队列，如果没有持有锁，那如何释放呢？很有道理的样子，但其实并没有回答jdk为什么要这么做，今天我们就探讨下具体原因。 wait和notify的使用​      我们先对wait和notify进行介绍，wait">
+<meta name="keywords" content="java,并发">
 <meta property="og:type" content="article">
-<meta property="og:title" content="从String.intern()方法浅谈堆中常量池">
-<meta property="og:url" content="https://www.yuanqiongqiong.cn/2019/04/04/从String-intern-方法浅谈堆中常量池/index.html">
+<meta property="og:title" content="为什么wait和notify要在同步块内执行？">
+<meta property="og:url" content="https://www.yuanqiongqiong.cn/2019/04/13/为什么wait和notify要在同步块内执行/index.html">
 <meta property="og:site_name" content="袁琼琼的博客">
-<meta property="og:description" content="简介​       String是我们最常用的一个类，和普通java类一样其对象会存在java堆中。但是String类有其特殊之处，可以通过new方法生成，也可以通过带引号的字符串常量直接赋值。在JDK7之前，字符串常量是存在永久带Perm 区的，JDK7开始在将常量池迁移到堆中，这个变化也导致了String的新特性，下面我们慢慢进行介绍。 String.intern()方法简单的说，String">
+<meta property="og:description" content="概述​      今天看到一个很值得深思的问题”为什么wait()，notify()，notifyAll()方法需要在同步块中执行？“，我的第一反应是wait()方法功能就是释放对象锁进行等待队列，如果没有持有锁，那如何释放呢？很有道理的样子，但其实并没有回答jdk为什么要这么做，今天我们就探讨下具体原因。 wait和notify的使用​      我们先对wait和notify进行介绍，wait">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-04-05T05:41:58.000Z">
+<meta property="og:updated_time" content="2019-04-13T15:50:04.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="从String.intern()方法浅谈堆中常量池">
-<meta name="twitter:description" content="简介​       String是我们最常用的一个类，和普通java类一样其对象会存在java堆中。但是String类有其特殊之处，可以通过new方法生成，也可以通过带引号的字符串常量直接赋值。在JDK7之前，字符串常量是存在永久带Perm 区的，JDK7开始在将常量池迁移到堆中，这个变化也导致了String的新特性，下面我们慢慢进行介绍。 String.intern()方法简单的说，String">
+<meta name="twitter:title" content="为什么wait和notify要在同步块内执行？">
+<meta name="twitter:description" content="概述​      今天看到一个很值得深思的问题”为什么wait()，notify()，notifyAll()方法需要在同步块中执行？“，我的第一反应是wait()方法功能就是释放对象锁进行等待队列，如果没有持有锁，那如何释放呢？很有道理的样子，但其实并没有回答jdk为什么要这么做，今天我们就探讨下具体原因。 wait和notify的使用​      我们先对wait和notify进行介绍，wait">
 
 
 
@@ -124,7 +124,7 @@
 
   
   
-  <link rel="canonical" href="https://www.yuanqiongqiong.cn/2019/04/04/从String-intern-方法浅谈堆中常量池/">
+  <link rel="canonical" href="https://www.yuanqiongqiong.cn/2019/04/13/为什么wait和notify要在同步块内执行/">
 
 
 
@@ -134,7 +134,7 @@
   };
 </script>
 
-  <title>从String.intern()方法浅谈堆中常量池 | 袁琼琼的博客</title>
+  <title>为什么wait和notify要在同步块内执行？ | 袁琼琼的博客</title>
   
 
 
@@ -354,7 +354,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://www.yuanqiongqiong.cn/2019/04/04/从String-intern-方法浅谈堆中常量池/">
+    <link itemprop="mainEntityOfPage" href="https://www.yuanqiongqiong.cn/2019/04/13/为什么wait和notify要在同步块内执行/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="袁琼琼">
@@ -371,7 +371,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">从String.intern()方法浅谈堆中常量池
+          <h1 class="post-title" itemprop="name headline">为什么wait和notify要在同步块内执行？
 
               
             
@@ -397,25 +397,9 @@
                 
               
 
-              <time title="Created: 2019-04-04 23:27:08" itemprop="dateCreated datePublished" datetime="2019-04-04T23:27:08+08:00">2019-04-04</time>
+              <time title="Created: 2019-04-13 23:50:04" itemprop="dateCreated datePublished" datetime="2019-04-13T23:50:04+08:00">2019-04-13</time>
             
 
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2019-04-05 13:41:58" itemprop="dateModified" datetime="2019-04-05T13:41:58+08:00">2019-04-05</time>
-              
             
           </span>
 
@@ -431,7 +415,7 @@
                 <span class="post-meta-item-text">In</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/jvm/" itemprop="url" rel="index"><span itemprop="name">jvm</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java多线程/" itemprop="url" rel="index"><span itemprop="name">java多线程</span></a></span>
 
                 
                 
@@ -450,8 +434,8 @@
                 </span>
             
                 <span class="post-meta-item-text">Comments: </span>
-                <a href="/2019/04/04/从String-intern-方法浅谈堆中常量池/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/04/04/从String-intern-方法浅谈堆中常量池/" itemprop="commentCount"></span>
+                <a href="/2019/04/13/为什么wait和notify要在同步块内执行/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/04/13/为什么wait和notify要在同步块内执行/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -486,47 +470,43 @@
       
 
       
-        <h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>​       String是我们最常用的一个类，和普通java类一样其对象会存在java堆中。但是String类有其特殊之处，可以通过new方法生成，也可以通过带引号的字符串常量直接赋值。在JDK7之前，字符串常量是存在永久带Perm 区的，JDK7开始在将常量池迁移到堆中，这个变化也导致了String的新特性，下面我们慢慢进行介绍。</p>
-<h1 id="String-intern-方法"><a href="#String-intern-方法" class="headerlink" title="String.intern()方法"></a>String.intern()方法</h1><p>简单的说，String.intern()方法的作用就是返回常量池中字符串对象，在对该方法进行详解之前，我们看几个创建字符串对象的例子。以下说明及运行结果都是以JDK8为java环境。</p>
-<p>（1）直接赋值字符串常量</p>
-<p>​      这种方式会判断常量池中是否存在字符串常量，如果存在返回该常量对象，否则在常量池中创建常量对象并返回。</p>
-<p><code>//在常量池中创建常量“abc”，s1,s2指向常量池中对象地址        
-String s1 = &quot;abc&quot;;
-String s2 = &quot;abc&quot;;
-System.out.println(s1 == s2);//true</code></p>
-<p>（2）通过new关键字创建</p>
-<p>​      这种方式会在堆上创建String对象，如果常量池中没有该常量，将常量加入常量池中。</p>
-<p><code>//在堆上创建对象S3,S4,常量池中创建对象“abc”
-String s3 = new String(&quot;abc&quot;);
-String s4 = new String(&quot;abc&quot;);
-System.out.println(s3 == s4);//false</code></p>
-<p>（3）字符串常量相加</p>
-<p>​       这种方式如s5，会在常量池中创建”cd”,”ef”,”cdef”三个对象，s5指向常量池中的”cdef”对象。</p>
-<p><code>String s5 = &quot;cd&quot; + &quot;ef&quot;;
-String s6 = &quot;cdef&quot;;
-System.out.println(s5==s6);//true</code></p>
-<p>（4）两个new的String对象相加</p>
-<p>​      这种方式如s7，会在堆中创建三个对象”gh”对象，”lm”对象，以及”ghlm”对象，在常量池中创建对象”gh”,”lm”。</p>
-<p><code>String s7 = new String(&quot;gh&quot;) + new String(&quot;lm&quot;);
-String s8 = &quot;ghlm&quot;;
-System.out.println(s7==s8);//false</code></p>
-<p>（5）字符串常量与new的String对象相加</p>
-<p>​     这种方式如s9，会在堆中创建两个对象“op”，“mnop”，并将字符串常量“op”, “mn”加到常量池中。</p>
-<p><code>String s9 = &quot;mn&quot; + new String(&quot;op&quot;);
-String s10 = &quot;mnop&quot;;
-System.out.println(s9==s10);//false</code></p>
-<p>​     了解字符串常量的创建及其在内存中的存储，我们看native方法intern()的作用：判断String对象的常量值是否存在于常量池中，如果存在并且是常量池对象，返回该常量池对象；如果存在并且是指向堆中的对象，返回堆中对象地址；如果不存在，则将对象的引用复制到常量池，并返回该对象的引用。下面我们看几条语句的运行结果，第一个输出之所以为true，</p>
-<p><code>String s11 = new String(&quot;a&quot;) + new String(&quot;a&quot;);
-s11.intern();//由于常量池中无“aa”,因此在常量池中建“aa”的引用,指向堆中的s11
-String s12 = &quot;aa&quot;;//s12指向常量池中的对象（该对象指向S11）
-System.out.println(s11 == s12.intern());//true
-String s13 = new String(&quot;b&quot;);
-s13.intern();//常量池中已经有“b”了，不做任何操作
-String s14 = &quot;b&quot;;
-System.out.println(s13==s14.intern());//false</code></p>
-<p>​      如果理解了以上运行的结果，对intern()方法的左右就掌握的差不多了。那么久可以开始我们的主题，string pool，字符串常量池。</p>
-<h1 id="字符串常量池"><a href="#字符串常量池" class="headerlink" title="字符串常量池"></a>字符串常量池</h1><p>​       字符串常量池是jvm为了减小内存开销而在创建字符串对象时的一个优化，类似缓冲区。在hotspot中，字符串常量池是一个叫做StringTable的HashTable，默认长度是1009，在JDK7开始可以通过”-XX:StringTableSize=1009” 参数来设置，字符串常量池数据可以被gc回收（在JDK6及其以前，字符串常量存在永久带无法被gc回收，如果添加太多字符串常量到该区域，容易发生OOM）。由于字符串常量池是利用HashTable实现，因此一定会发生hash碰撞。jvm在这方面做了一定优化，会根据hashTable的碰撞情况来决定是否做rehash，当从这个StringTable里查找某个字符串是否存在，如果对其对应的桶链表进行遍历，遍历超过了100个节点还是没有找到，那就会设置一个flag，让下次进入到safepoint的时候做一次rehash动作，尽量减少碰撞的发生。当然，在数据量比较大的情况下，这也无法从根本上解决问题，只能设置StringTableSize的值来缓解。</p>
-<p>​       由于JDK7开始字符串常量池在堆中分布，所以young gc过程会扫描该区域，以保证处于新生代的String对象不会被回收掉，因此如果字符串常量区非常庞大会导致young gc过程扫描的时间也会变长。但是，young gc阶段并不会对字符串常量区进行回收，具体回收阶段是在Full gc或者CMS gc阶段（题外话：我觉得full gc这个名字并不是很好，容易理解为对所有区域进行回收，其实full GC是对老年代的STW的gc，full gc的次数是老年代gc的STW次数，时间是老年代STW的总时间）。</p>
+        <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>​      今天看到一个很值得深思的问题”为什么wait()，notify()，notifyAll()方法需要在同步块中执行？“，我的第一反应是wait()方法功能就是释放对象锁进行等待队列，如果没有持有锁，那如何释放呢？很有道理的样子，但其实并没有回答jdk为什么要这么做，今天我们就探讨下具体原因。</p>
+<h1 id="wait和notify的使用"><a href="#wait和notify的使用" class="headerlink" title="wait和notify的使用"></a>wait和notify的使用</h1><p>​      我们先对wait和notify进行介绍，wait()和notify()方法是Object类的两个native方法，是java线程间通信的方式，在一个线程中调用对象的wait()方法，会使得线程阻塞在该对象锁上；调用notify()方法会唤醒在这个对象上阻塞的方法(具体的，该方法会随机唤醒一个阻塞在对象上的线程)。这两个方法使用时总是成对出现，并且必须在同步块中执行。下面看下源码中的相关定义：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//将线程在挂起，进入阻塞状态，timeout 毫秒时间内没有唤醒会自动被唤醒</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">native</span> <span class="keyword">void</span> <span class="title">wait</span><span class="params">(<span class="keyword">long</span> timeout)</span> <span class="keyword">throws</span> InterruptedException</span>;</span><br><span class="line"><span class="comment">//将线程挂起，进入阻塞状态</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">wait</span><span class="params">()</span> <span class="keyword">throws</span> InterruptedException</span>;</span><br><span class="line"><span class="comment">//随机唤醒一个阻塞在该对象上的线程</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">native</span> <span class="keyword">void</span> <span class="title">notify</span><span class="params">()</span></span>;</span><br><span class="line"><span class="comment">//唤醒所有阻塞在对象上的线程</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">native</span> <span class="keyword">void</span> <span class="title">notifyAll</span><span class="params">()</span></span>;</span><br></pre></td></tr></table></figure>
+<p>​      各个方法如何使用都已经注释在代码中，下面我们看一个实际使用的简单示例，在线程thread中挂起线程，然后在主线程中调用notify唤醒线程。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Created by yuanqiongqiong on 2019/4/12.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">WaitTest</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> Logger logger = LoggerFactory.getLogger(WaitTest.class);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> integer object = <span class="keyword">new</span> Object();</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">boolean</span> flag = <span class="keyword">true</span>;<span class="comment">//避免出现因为调度问题先执行主线程情况</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String [] args)</span> </span>&#123;</span><br><span class="line">        Thread thread = <span class="keyword">new</span> Thread(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                <span class="keyword">if</span> (flag) &#123;</span><br><span class="line">                    <span class="keyword">synchronized</span> (object) &#123;</span><br><span class="line">                        flag = <span class="keyword">false</span>;</span><br><span class="line">                        <span class="keyword">try</span> &#123;</span><br><span class="line">                            logger.info(<span class="string">"挂起线程"</span>);</span><br><span class="line">                            object.wait();</span><br><span class="line">                            logger.info(<span class="string">"线程被唤醒"</span>);</span><br><span class="line">                        &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                            logger.error(<span class="string">"exception = &#123;&#125;"</span>, e);</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">        thread.start();</span><br><span class="line">        logger.info(<span class="string">"在主线程中"</span>);</span><br><span class="line">        <span class="keyword">while</span> (flag) &#123;&#125;<span class="comment">//忙等</span></span><br><span class="line">        <span class="keyword">synchronized</span> (object) &#123;</span><br><span class="line">            logger.info(<span class="string">"调用notify"</span>);</span><br><span class="line">            object.notify();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>​       执行结果为：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">22</span>:<span class="number">27</span>:<span class="number">40.842</span> [Thread-<span class="number">0</span>] INFO com.qiongqiong.WaitTest - 挂起线程</span><br><span class="line"><span class="number">22</span>:<span class="number">27</span>:<span class="number">40.842</span> [main] INFO com.qiongqiong.WaitTest - 在主线程中</span><br><span class="line"><span class="number">22</span>:<span class="number">27</span>:<span class="number">40.845</span> [main] INFO com.qiongqiong.WaitTest - 调用notify</span><br><span class="line"><span class="number">22</span>:<span class="number">27</span>:<span class="number">40.845</span> [Thread-<span class="number">0</span>] INFO com.qiongqiong.WaitTest - 线程被唤醒</span><br></pre></td></tr></table></figure>
+<p>​       如前所述，wait和notify必须在同步块里执行，并且这个synchronized锁定的对象一定是调用wait和notify对象。否则，会抛出java.lang.IllegalMonitorStateExceptiony异常，这是jdk做了一层强制校验。</p>
+<h1 id="问题分析"><a href="#问题分析" class="headerlink" title="问题分析"></a>问题分析</h1><p>​      我们首先从JDK实现的角度分析，我们知道synchronized底层使用monitorenter和monitorexit指令(查看class文件也可以看到)，这块会获取对象锁(monitor)。而wait和notify相关的native方法要求调用时必须持有对象锁。</p>
+<p>​     其次，我们假设如果wait()和notify()不在同步块中并且可以执行上述示例可能出现的结果，thread线程和main线程按照下面顺序执行。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">thread线程</th>
+<th>main线程</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">logger.info(“挂起线程”);</td>
+<td></td>
+</tr>
+<tr>
+<td style="text-align:left"></td>
+<td>logger.info(“调用notify”);</td>
+</tr>
+<tr>
+<td style="text-align:left"></td>
+<td>object.notify();</td>
+</tr>
+<tr>
+<td style="text-align:left">object.wait();</td>
+</tr>
+</tbody>
+</table>
+<p>​      当main线程执行notify()时，thread线程还没有调用wait，即还处于运行状态，这是这条语句调用没有任何作用。但是，wait()方法执行后，thread线程将永远处于阻塞状态，这个问题就是多线程中的”lost wake up”问题，而jdk为了避免该问题的出现，强制要求我们使用wait和notify时必须持有该对象的锁。</p>
+<p>​      以上就是wait和notify为什么必须在同步块中调用的原因，如果个人理解有问题，欢迎指正！</p>
 
       
     </div>
@@ -574,9 +554,9 @@ System.out.println(s13==s14.intern());//false</code></p>
       
         <div class="post-tags">
           
-            <a href="/tags/jvm/" rel="tag"># jvm</a>
-          
             <a href="/tags/java/" rel="tag"># java</a>
+          
+            <a href="/tags/并发/" rel="tag"># 并发</a>
           
         </div>
       
@@ -589,8 +569,8 @@ System.out.println(s13==s14.intern());//false</code></p>
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/04/04/gc定义解析/" rel="next" title="对full gc, cms gc, magor gc的疑问">
-                <i class="fa fa-chevron-left"></i> 对full gc, cms gc, magor gc的疑问
+              <a href="/2019/04/11/MyBatis中使用动态代理机制分析/" rel="next" title="MyBatis中使用动态代理机制分析">
+                <i class="fa fa-chevron-left"></i> MyBatis中使用动态代理机制分析
               </a>
             
           </div>
@@ -598,10 +578,6 @@ System.out.println(s13==s14.intern());//false</code></p>
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2019/04/05/MAT中指标解释/" rel="prev" title="MAT中指标解释">
-                MAT中指标解释 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -793,7 +769,7 @@ System.out.println(s13==s14.intern());//false</code></p>
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#简介"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#String-intern-方法"><span class="nav-number">2.</span> <span class="nav-text">String.intern()方法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#字符串常量池"><span class="nav-number">3.</span> <span class="nav-text">字符串常量池</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#概述"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#wait和notify的使用"><span class="nav-number">2.</span> <span class="nav-text">wait和notify的使用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#问题分析"><span class="nav-number">3.</span> <span class="nav-text">问题分析</span></a></li></ol></div>
             
 
           </div>
