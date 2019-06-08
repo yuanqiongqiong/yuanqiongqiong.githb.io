@@ -106,7 +106,7 @@
   <meta name="description" content="技术学习，心得分享！">
 <meta property="og:type" content="website">
 <meta property="og:title" content="袁琼琼的博客">
-<meta property="og:url" content="https://www.yuanqiongqiong.cn/tags/数据库/index.html">
+<meta property="og:url" content="https://www.yuanqiongqiong.cn/page/2/index.html">
 <meta property="og:site_name" content="袁琼琼的博客">
 <meta property="og:description" content="技术学习，心得分享！">
 <meta property="og:locale" content="zh-Hans">
@@ -122,7 +122,7 @@
 
   
   
-  <link rel="canonical" href="https://www.yuanqiongqiong.cn/tags/数据库/">
+  <link rel="canonical" href="https://www.yuanqiongqiong.cn/page/2/">
 
 
 
@@ -132,7 +132,7 @@
   };
 </script>
 
-  <title>Tag: 数据库 | 袁琼琼的博客</title>
+  <title>袁琼琼的博客</title>
   
 
 
@@ -180,7 +180,8 @@
     
   
 
-  <div class="container sidebar-position-left ">
+  <div class="container sidebar-position-left 
+  page-home">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -256,7 +257,7 @@
         
         
           
-          <li class="menu-item menu-item-标签 menu-item-active">
+          <li class="menu-item menu-item-标签">
 
     
     
@@ -312,28 +313,6 @@
   
     
 
-    
-    
-      
-      
-    
-      
-      
-    
-      
-      
-    
-      
-      
-    
-      
-      
-    
-    
-
-  
-
-
   
 
   
@@ -357,53 +336,213 @@
           
           <div id="content" class="content">
             
+  <section id="posts" class="posts-expand">
+    
+      
+
+  
 
   
   
   
-  <div class="post-block tag">
 
-    <div id="posts" class="posts-collapse">
-      <div class="collection-title">
-        <h1>数据库<small>Tag</small>
-        </h1>
-      </div>
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://www.yuanqiongqiong.cn/2019/04/03/gc日志/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="袁琼琼">
+      <meta itemprop="description" content="技术学习，心得分享！">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="袁琼琼的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/04/03/gc日志/" class="post-title-link" itemprop="url">从gc日志学习gc相关知识</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2019-04-03 19:45:10" itemprop="dateCreated datePublished" datetime="2019-04-03T19:45:10+08:00">2019-04-03</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2019-04-05 13:41:58" itemprop="dateModified" datetime="2019-04-05T13:41:58+08:00">2019-04-05</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/jvm/" itemprop="url" rel="index"><span itemprop="name">jvm</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+              
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">Comments: </span>
+                <a href="/2019/04/03/gc日志/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/04/03/gc日志/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
 
       
         
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
+          
+            <p>
+              简介​       最近又对gc有了很大的兴趣，重新对之前gc相关的知识进行学习，其实是看了寒泉子大神gc相关的博客，觉得真的是厉害，这里先记录下如何去阅读gc日志吧。
+gc日志解读young gc 日志我们通过具体的日志进行讲解，如下：
+)
+最前面的”Allocation Failure”表示yo
+              ...
+            </p>
+          <!--noindex-->
+          
+            <div class="post-button text-center">
+              <a class="btn" href="/2019/04/03/gc日志/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          
+          <!--/noindex-->
         
-          <a class="post-title-link" href="/2019/04/11/MyBatis中使用动态代理机制分析/" itemprop="url">
-            
-              <span itemprop="name">MyBatis中使用动态代理机制分析</span>
-            
-          </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated" datetime="2019-04-11T23:09:23+08:00" content="2019-04-11">
-          04-11
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
       
     </div>
 
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
   </div>
   
   
   
+  </article>
+
+
+    
+  </section>
 
   
+  <nav class="pagination">
+    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span>
+  </nav>
 
 
 
