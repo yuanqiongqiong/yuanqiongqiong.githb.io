@@ -111,17 +111,17 @@
 <meta property="og:site_name" content="袁琼琼的博客">
 <meta property="og:description" content="概述​       二叉搜索树是优化搜索效率最常用的数据结构，时间复杂度为O(h)，其中h是树的高度。可以看出，树的高度是影响搜索效率的关键因素。在树退化为一个链表(节点都在左或都在右)，搜索效率也就退化为O(n)。为了防止这种情况的出现平衡二叉搜索树出现，本文所介绍的红黑树就是一种特殊的”平衡”二叉树，因为红黑树只能保证没有一条路径会比其他路径长出2倍，所以并不是严格意义上的平衡树。但是这个性质">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://www.yuanqiongqiong.cn/2019/06/09/红黑树/黑色一个子节点.png">
-<meta property="og:image" content="https://www.yuanqiongqiong.cn/Users/yuanqiongqiong/blog/source/_drafts/黑后继节点.png">
-<meta property="og:image" content="https://www.yuanqiongqiong.cn/Users/yuanqiongqiong/blog/source/_drafts/情况四后继节点替换.png">
-<meta property="og:image" content="https://www.yuanqiongqiong.cn/Users/yuanqiongqiong/blog/source/_drafts/情况a.png">
-<meta property="og:image" content="https://www.yuanqiongqiong.cn/Users/yuanqiongqiong/blog/source/_drafts/情况b.png">
-<meta property="og:image" content="https://www.yuanqiongqiong.cn/Users/yuanqiongqiong/blog/source/_drafts/情况c1.png">
-<meta property="og:updated_time" content="2019-06-09T03:33:46.000Z">
+<meta property="og:image" content="https://i.bmp.ovh/imgs/2019/06/678b78e378e317ff.png">
+<meta property="og:image" content="https://i.bmp.ovh/imgs/2019/06/250e551ce4b5fdf9.png">
+<meta property="og:image" content="https://i.bmp.ovh/imgs/2019/06/4b1196ebd3b872f0.png">
+<meta property="og:image" content="https://i.bmp.ovh/imgs/2019/06/8834333ca8a069f7.png">
+<meta property="og:image" content="https://i.bmp.ovh/imgs/2019/06/03f75c934ca40bcf.png">
+<meta property="og:image" content="https://i.bmp.ovh/imgs/2019/06/8e4c7893af272544.png">
+<meta property="og:updated_time" content="2019-06-09T04:04:56.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="红黑树">
 <meta name="twitter:description" content="概述​       二叉搜索树是优化搜索效率最常用的数据结构，时间复杂度为O(h)，其中h是树的高度。可以看出，树的高度是影响搜索效率的关键因素。在树退化为一个链表(节点都在左或都在右)，搜索效率也就退化为O(n)。为了防止这种情况的出现平衡二叉搜索树出现，本文所介绍的红黑树就是一种特殊的”平衡”二叉树，因为红黑树只能保证没有一条路径会比其他路径长出2倍，所以并不是严格意义上的平衡树。但是这个性质">
-<meta name="twitter:image" content="https://www.yuanqiongqiong.cn/2019/06/09/红黑树/黑色一个子节点.png">
+<meta name="twitter:image" content="https://i.bmp.ovh/imgs/2019/06/678b78e378e317ff.png">
 
 
 
@@ -404,9 +404,13 @@
                 
               
 
-              <time title="Created: 2019-06-09 11:33:46" itemprop="dateCreated datePublished" datetime="2019-06-09T11:33:46+08:00">2019-06-09</time>
+              <time title="Created: 2019-06-09 11:36:57 / Modified: 12:04:56" itemprop="dateCreated datePublished" datetime="2019-06-09T11:36:57+08:00">2019-06-09</time>
             
 
+            
+              
+
+              
             
           </span>
 
@@ -493,24 +497,24 @@
 <p>​     这种情况实际是不存在的，因为如果x是红色，其子节点必定是黑色，而左右子树的黑高就不相等。</p>
 <p>(3) x为黑色并且x有一个子节点</p>
 <p>​     这种情况下，x的这个子节点y必定是红色，因此只需要将y替换为x并且将y置为黑色即可。具体如下图：</p>
-<p><img src="/2019/06/09/红黑树/黑色一个子节点.png" alt></p>
+<p><img src="https://i.bmp.ovh/imgs/2019/06/678b78e378e317ff.png" alt></p>
 <p>(4) x为红色并且x有两个子节点</p>
 <p>​     这种情况下，可以找到x节点的后继节点s，s的情况可能有以下两种：</p>
-<p><img src="/Users/yuanqiongqiong/blog/source/_drafts/黑后继节点.png" alt></p>
-<p>删除x时可以用s替换为x，并将s的颜色设置为x的颜色。此时删除x相当于删除s。如果s没有子节点则这种情况转换为(1)或者(6)，如果s有子节点，这种情况转换为(2)或者(3)。我们以比较负责的情况x的后继节点有一个子孩子并且s为黑色为例给出删除示例：<img src="/Users/yuanqiongqiong/blog/source/_drafts/情况四后继节点替换.png" alt></p>
+<p><img src="https://i.bmp.ovh/imgs/2019/06/250e551ce4b5fdf9.png" alt></p>
+<p>删除x时可以用s替换为x，并将s的颜色设置为x的颜色。此时删除x相当于删除s。如果s没有子节点则这种情况转换为(1)或者(6)，如果s有子节点，这种情况转换为(2)或者(3)。我们以比较负责的情况x的后继节点有一个子孩子并且s为黑色为例给出删除示例：<img src="https://i.bmp.ovh/imgs/2019/06/4b1196ebd3b872f0.png" alt></p>
 <p>(5) x为黑色并且x有两个子节点</p>
 <p>​       这种情况同(4)的处理机制一样。    </p>
 <p>(6) x为黑色并且x没有子节点</p>
 <p>​       这种情况比较复杂，因为删除黑节点会破坏黑高。可以分为如下几种情况讨论：</p>
 <p>(a). x节点的兄弟节点b有一个与其方向一致的红色子节点s</p>
 <p>​       此时将父节点进行旋转，并将删除节点的黑色转移到父节点，而父节点原来位置的颜色保持不变。</p>
-<p><img src="/Users/yuanqiongqiong/blog/source/_drafts/情况a.png" alt></p>
+<p><img src="https://i.bmp.ovh/imgs/2019/06/8834333ca8a069f7.png" alt></p>
 <p>(b). x节点的兄弟节点b有一个与其方向不一致的红色节点s</p>
 <p>​       此时首先通过旋转操作转为情况(a)，再按照(a)进行处理。</p>
-<p><img src="/Users/yuanqiongqiong/blog/source/_drafts/情况b.png" alt></p>
+<p><img src="https://i.bmp.ovh/imgs/2019/06/03f75c934ca40bcf.png" alt></p>
 <p>(c) 兄弟节点为黑色，且兄弟节点无红色子节点</p>
 <p>​       如果父节点是红色，那么将父节点置为黑色，兄弟节点置为红色即可解决问题。</p>
-<p>​      <img src="/Users/yuanqiongqiong/blog/source/_drafts/情况c1.png" alt></p>
+<p>​      <img src="https://i.bmp.ovh/imgs/2019/06/8e4c7893af272544.png" alt></p>
 <p>​       如果父节点是黑色，那么确实没有红节点可以作为黑节点转移的节点，只能对兄弟节点重新设置颜色，已平衡被删除节点侧减小的黑高，并即将节点一直上移知道根节点使得所有的路径的黑高都减1。</p>
 <p>(d) 兄弟节点为红色</p>
 <p>​       这种情况可以通过旋转父节点，转换为父节点为红色，兄弟节点为黑色的情况处理。</p>
