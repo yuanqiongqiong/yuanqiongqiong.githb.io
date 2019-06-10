@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://www.yuanqiongqiong.cn/"/>
-  <updated>2019-06-09T04:22:40.000Z</updated>
+  <updated>2019-06-10T05:06:04.000Z</updated>
   <id>https://www.yuanqiongqiong.cn/</id>
   
   <author>
@@ -15,6 +15,33 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>谈谈volatile关键字</title>
+    <link href="https://www.yuanqiongqiong.cn/2019/06/09/%E8%B0%88%E8%B0%88volatile%E5%85%B3%E9%94%AE%E5%AD%97/"/>
+    <id>https://www.yuanqiongqiong.cn/2019/06/09/谈谈volatile关键字/</id>
+    <published>2019-06-09T12:25:58.000Z</published>
+    <updated>2019-06-10T05:06:04.000Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>​       在多线程访问共享变量时，java通过volatile关键字保证变量的可见性，相比于synchronized关键字，volatile并不会引起线程上下文的切换，因此具有较小的开销。同时，volatile可以禁止指令重排序。这篇文章将对以上两点作用的，希望可以加深对一些概念的理解。</p><h1 id="volatile保证变量可见性"><a href="#volatile保证变量可见性" class="headerlink" title="volatile保证变量可见性"></a>volatile保证变量可见性</h1><p>​      共享变量的可见性，简单的说就是在一个线程中修改了变量，在另一个线程可以读到修改后的变量。在对这块实现原理进行介绍之前，我们必须对java内存模型有一定的了解。</p><h2 id="java内存模型"><a href="#java内存模型" class="headerlink" title="java内存模型"></a>java内存模型</h2><p>​       java内存模型规定了所有的共享变量(除局部变量及方法参数)都存储在主内存中，而每个线程也有自己的工作内存，线程的工作内存保存了该线程使用到的变量的主内存的副本，线程对变量的所有操作都必须在工作内存中进行，而不能直接读取主内存中的变量，具体如下如所示：</p><p><img src="/2019/06/09/谈谈volatile关键字/jmm模型.png" alt></p><p>​       主内存和工作内存间的交互通过如下8中操作来完成，可以看出主内存变量值到工作内存可以通过read和load完成，工作内存到主内存变量值可以通过store和write完成。</p><p>(1) lock(锁定)：作用于主内存，把一个变量标识为一个线程独占的状态；</p><p>(2) unlock(解锁)：作用于主内存的变量，它把一个处于锁定状态的变量释放出来，释放后的变量才可以被其他线程锁定。</p><p>(3) read(读取)：作用于主内存，把一个变量从主内存传输到工作内存；</p><p>(4) load(载入)：作用于工作内存，把read操作从主内存中得到的变量值放入工作内存的变量副本中;</p><p>(5) use(使用)：作用于工作内存的变量，它把工作内存中一个变量的值传递给执行引擎，每当虚拟机遇到一个需要使用到变量的值的字节码指令时将会执行这个操作。</p><p>(6) assign(赋值)：作用于工作内存的变量，它把一个从执行引擎接收到的值赋给工作内存的变量，每当虚拟机遇到一个给变量赋值的字节码指令时执行这个操作。</p><p>(7) store(存储)：作用于工作内存的变量，它把工作内存中一个变量的值传送到主内存中，以便随后的write操作使用。</p><p>(8) write(写入)：作用于主内存的变量，它把store操作从工作内存中得到的变量的值放入主内存的变量中。</p><p>​       对于非volatile变量读取变量值会直接执行load，use操作从工作内存中读取变量，这种可能会出现读取的变量值是失效的，与主内存中的不一致。volatile变量通过强制要求read，load，use必须连续出现保证每次读取前都从主内存中刷新最新的值。通过要求assign，store，write必须连续出现保证了修改的数据立刻同步到主内存中，这种就保证了变量的可见性。</p><h1 id="volatile禁止指令重排序"><a href="#volatile禁止指令重排序" class="headerlink" title="volatile禁止指令重排序"></a>volatile禁止指令重排序</h1><p>​        指令重排序是指编译器和处理器为了优化程序执行顺序对程序的执行语句进行优化。举一个简单的创建对象的语句：</p><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dclProblemSingleton = <span class="keyword">new</span> DCLProblemSingleton();</span><br></pre></td></tr></table></figure><p>​        这条语句会被jvm解析为以下三个操作执行：(1) 为对象分配内存；(2) 为对象赋值；(3)将内存地址赋值给dclProblemSingleton变量。由于(1)和(3)并不存在依赖关系，所以指令重排序后语句执行的顺序可能是(1)(3)(2)。这个时候如果作为共享变量多线程访问就会存在问题。经典的DCL双重检查锁实现的饱汉模式的单例就会存在这个问题，可能存在又有的线程访问到未被初始化的对象，具体代码如下：</p><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DCLProblemSingleton</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> ele = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> DCLProblemSingleton dclProblemSingleton;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">DCLProblemSingleton</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> DCLProblemSingleton <span class="title">getDclProblemSingleton</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">//第一次检测</span></span><br><span class="line">        <span class="keyword">if</span> (dclProblemSingleton == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">synchronized</span> (DCLProblemSingleton.class) &#123;</span><br><span class="line">                <span class="comment">//第二次检测</span></span><br><span class="line">                <span class="keyword">if</span> (dclProblemSingleton == <span class="keyword">null</span>) &#123;</span><br><span class="line">                    dclProblemSingleton = <span class="keyword">new</span> DCLProblemSingleton();<span class="comment">//可能出现问题的地方</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> dclProblemSingleton;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p>​        正是由于java中的指令重排序，DCL方式实现的指令重排序会存在问题，解决这个问题的方式就是通过将dclProblemSingleton声明为volatile来禁止指令重排序。</p><h2 id="内存屏障"><a href="#内存屏障" class="headerlink" title="内存屏障"></a>内存屏障</h2><p>​       JDK1.5中已引入了内存屏障，volatile关键字是通过内存屏障(栅栏)来实现的禁止质量重排序。内存屏障又称为内存栅栏，是一组cpu指令。不同架构的cpu的内存屏障实现都不相同，我们以Intel x86为例子，其实现了如下内存栅栏：</p><p>(1) sfence: 确保sfence前所有的store先与sfence所有的store命令执行；</p><p>(2) Ifence: 确保Ifence前所有的load先与Ifence所有的load命令执行；</p><p>(3) mfence: 功能相当于sfence和mfence总和。</p><p>(4) Lock前缀，Lock不是一种内存屏障，但是它能完成类似内存屏障的功能。Lock会对CPU总线和高速缓存加锁，可以理解为CPU指令级的一种锁。</p><p>​      <strong>有了上述的内存屏障命令我们看下volatile是如何实现禁止指令重排序的？</strong></p><p>​      在x86平台上volatile是通过Lock前缀实现的，Lock前缀先对总线/缓存加锁，然后执行后面的指令，最后释放锁后会把高速缓存中的脏数据全部刷新回主内存。在Lock前缀锁住总线/缓存期间，其他cpu的读写请求都会被阻塞直到释放，Lock后的写操作会会使得其他cpu的的缓存失效。例如以上的赋值语句dclProblemSingleton = new DCLProblemSingleton()，如果dclProblemSingleton被volatile关键字修饰，那么执行(3)上加上lock，那么(3)前面的步骤(1)(2)不执行完成就无法执行(3)，也就禁止了指令重排序。在lock释放后，又会将缓存刷新到主存中。</p><p>​       <strong>内存屏障与上述的可见性实现是否有关系？</strong></p><p>​       在上面的lock操作中，在lock释放后会将缓存刷新到主存中，也就是我们上面所将的assign，store，write必须连续出现。我理解volatile的可见性在jvm层面是通过read，load，use必须连续出现，assign，store，write必须连续出现保证的。而这个连续出现则是内存屏障使用的表象，底层原理还是依靠内存屏障来解决。</p><h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p> 周志明. “深入理解Java虚拟机：JVM高级特性与最佳实践（第2版）”</p><p><a href="https://juejin.im/post/5a52cfdc518825733b0eb69a" target="_blank" rel="noopener">https://juejin.im/post/5a52cfdc518825733b0eb69a</a></p><p><a href="https://blog.csdn.net/HJsir/article/details/80713783" target="_blank" rel="noopener">https://blog.csdn.net/HJsir/article/details/80713783</a></p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h1 id=&quot;概述&quot;&gt;&lt;a href=&quot;#概述&quot; class=&quot;headerlink&quot; title=&quot;概述&quot;&gt;&lt;/a&gt;概述&lt;/h1&gt;&lt;p&gt;​       在多线程访问共享变量时，java通过volatile关键字保证变量的可见性，相比于synchronized关键字，volat
+      
+    
+    </summary>
+    
+      <category term="java" scheme="https://www.yuanqiongqiong.cn/categories/java/"/>
+    
+    
+      <category term="java" scheme="https://www.yuanqiongqiong.cn/tags/java/"/>
+    
+      <category term="java并发" scheme="https://www.yuanqiongqiong.cn/tags/java%E5%B9%B6%E5%8F%91/"/>
+    
+  </entry>
   
   <entry>
     <title>红黑树</title>
