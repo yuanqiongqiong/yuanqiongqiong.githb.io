@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=7.1.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.1.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.1.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '7.1.0',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="概述​        最近看ThreadLocal的实现原理的过程中了解到ThreadLocalMap是定义在ThreadLocal中的静态内部类，默默的问了问自己为什么要定义为静态内部类？定义为普通内部类有没有关系？发现自己对java的内部类知识不是很了解，于是恶补了下内部类的用法和区别，希望这边文章可以对跟我有相似问题的同学有所帮助。 内部类介绍​       顾名思义，内部类就是在一个类的内">
+<meta name="keywords" content="java">
+<meta property="og:type" content="article">
+<meta property="og:title" content="谈谈java中的内部类">
+<meta property="og:url" content="https://www.yuanqiongqiong.cn/2019/06/18/谈谈java中的内部类/index.html">
+<meta property="og:site_name" content="袁琼琼的博客">
+<meta property="og:description" content="概述​        最近看ThreadLocal的实现原理的过程中了解到ThreadLocalMap是定义在ThreadLocal中的静态内部类，默默的问了问自己为什么要定义为静态内部类？定义为普通内部类有没有关系？发现自己对java的内部类知识不是很了解，于是恶补了下内部类的用法和区别，希望这边文章可以对跟我有相似问题的同学有所帮助。 内部类介绍​       顾名思义，内部类就是在一个类的内">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://www.yuanqiongqiong.cn/Users/yuanqiongqiong/blog/source/_posts/%E8%B0%88%E8%B0%88java%E5%86%85%E9%83%A8%E7%B1%BB/%E6%88%90%E5%91%98%E5%86%85%E9%83%A8%E7%B1%BB%E5%8F%8D%E7%BC%96%E8%AF%91.jpeg">
+<meta property="og:image" content="https://www.yuanqiongqiong.cn/Users/yuanqiongqiong/blog/source/_posts/%E8%B0%88%E8%B0%88java%E5%86%85%E9%83%A8%E7%B1%BB/%E9%9D%99%E6%80%81%E5%86%85%E9%83%A8%E7%B1%BB%E5%8F%8D%E7%BC%96%E8%AF%91.png">
+<meta property="og:image" content="https://www.yuanqiongqiong.cn/Users/yuanqiongqiong/blog/source/_posts/%E8%B0%88%E8%B0%88java%E5%86%85%E9%83%A8%E7%B1%BB/%E5%8C%BF%E5%90%8D%E5%86%85%E9%83%A8%E7%B1%BB%E5%8F%8D%E7%BC%96%E8%AF%91.png">
+<meta property="og:updated_time" content="2019-06-17T17:05:08.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="谈谈java中的内部类">
+<meta name="twitter:description" content="概述​        最近看ThreadLocal的实现原理的过程中了解到ThreadLocalMap是定义在ThreadLocal中的静态内部类，默默的问了问自己为什么要定义为静态内部类？定义为普通内部类有没有关系？发现自己对java的内部类知识不是很了解，于是恶补了下内部类的用法和区别，希望这边文章可以对跟我有相似问题的同学有所帮助。 内部类介绍​       顾名思义，内部类就是在一个类的内">
+<meta name="twitter:image" content="https://www.yuanqiongqiong.cn/Users/yuanqiongqiong/blog/source/_posts/%E8%B0%88%E8%B0%88java%E5%86%85%E9%83%A8%E7%B1%BB/%E6%88%90%E5%91%98%E5%86%85%E9%83%A8%E7%B1%BB%E5%8F%8D%E7%BC%96%E8%AF%91.jpeg">
+
+
+
+  <link rel="alternate" href="/atom.xml" title="袁琼琼的博客" type="application/atom+xml">
+
+
+
+  
+  
+  <link rel="canonical" href="https://www.yuanqiongqiong.cn/2019/06/18/谈谈java中的内部类/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>谈谈java中的内部类 | 袁琼琼的博客</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">袁琼琼的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">一个想在技术道路走下去的小渣渣，多多关照！</p>
+      
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-首页">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-关于">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-标签">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-分类">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-归档">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://www.yuanqiongqiong.cn/2019/06/18/谈谈java中的内部类/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="袁琼琼">
+      <meta itemprop="description" content="技术学习，心得分享！">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="袁琼琼的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">谈谈java中的内部类
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2019-06-18 01:03:05 / Modified: 01:05:08" itemprop="dateCreated datePublished" datetime="2019-06-18T01:03:05+08:00">2019-06-18</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+              
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">Comments: </span>
+                <a href="/2019/06/18/谈谈java中的内部类/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/06/18/谈谈java中的内部类/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon">
+            <i class="fa fa-eye"></i>
+             Views:  
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>​        最近看ThreadLocal的实现原理的过程中了解到ThreadLocalMap是定义在ThreadLocal中的静态内部类，默默的问了问自己为什么要定义为静态内部类？定义为普通内部类有没有关系？发现自己对java的内部类知识不是很了解，于是恶补了下内部类的用法和区别，希望这边文章可以对跟我有相似问题的同学有所帮助。</p>
+<h1 id="内部类介绍"><a href="#内部类介绍" class="headerlink" title="内部类介绍"></a>内部类介绍</h1><p>​       顾名思义，内部类就是在一个类的内部定义另一个类。就像我们在类中声明成员变量一样，变量可以使用访问控制符，static，可以声明为成员变量或者函数内部的局部变量。内部类也可以有上述的用法，java中的内部类可以分为普通内部类（成员内部类），静态内部类，局部内部类和匿名内部类。</p>
+<h2 id="成员内部类"><a href="#成员内部类" class="headerlink" title="成员内部类"></a>成员内部类</h2><p>​      成员内部类就是像普通的成员函数一样声明的内部类，下面我们先给出一个简单的示例，InnerClass是OutClass的成员内部类，可以访问OutClass的成员变量。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Created by yuanqiongqiong on 2019/6/14.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">OutClass</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> i;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">OutClass</span><span class="params">(<span class="keyword">int</span> i)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.i = i;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">InnerClass</span> </span>&#123;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">int</span> j;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">InnerClass</span><span class="params">(<span class="keyword">int</span> j)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">this</span>.j = j;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">print</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            System.out.println(<span class="string">"OutClass.i = "</span> + i);</span><br><span class="line">            System.out.println(<span class="string">"InnerClass.j = "</span> + j);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//测试</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">OutClassTest</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String [] args)</span> </span>&#123;</span><br><span class="line">        OutClass outClass = <span class="keyword">new</span> OutClass(<span class="number">1</span>);</span><br><span class="line">        OutClass.InnerClass innerClass = outClass.new InnerClass(<span class="number">2</span>);</span><br><span class="line">        innerClass.print();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我认为主要有以下几点用法：</p>
+<p>（1）可以使用public，private，protected或者默认的访问权限控制符声明，表示该内部类的访问权限；</p>
+<p>（2）可以访问外部类的成员变量和方法；</p>
+<p>（3）成员内部类不能声明静态成员；</p>
+<p>​       对于(2)，我们可以认为在内部类持有外部类的引用，这样内部类就可以通过这个引用访问外部类的所有的成员的方法和变量。同时，这也解释为什么要通过外部类对象来创建内部类。为了验证这个问题，我们对OutClass.java编译得到OutClass.class和OutClass$InnerClass.class，然后我们通过idea直接打开内部类class文件(我们之所以用idea自带的反编译器，是因为相比于javap，idea反编译的文件可读性更高)，具体如下：</p>
+<p><img src="/Users/yuanqiongqiong/blog/source/_posts/%E8%B0%88%E8%B0%88java%E5%86%85%E9%83%A8%E7%B1%BB/%E6%88%90%E5%91%98%E5%86%85%E9%83%A8%E7%B1%BB%E5%8F%8D%E7%BC%96%E8%AF%91.jpeg" alt></p>
+<p>​       java在编译内部类时会在其构造函数中默认添加外部类引用的参数，从而持有外部类的引用。</p>
+<p>​       对于(3)，成员内部类就相当于外部类的一个普通的成员变量，当jvm加载外部类的时候并不会加载非静态变量，因此也就不会加载内部类。如果内部类可以声明静态变量，那么就会出现类还没有加载却要初始化静态变量的现象，因此java不会允许这种情况通过编译。</p>
+<h2 id="静态内部类"><a href="#静态内部类" class="headerlink" title="静态内部类"></a>静态内部类</h2><p>​       静态内部类就是有static修饰的内部类，类似静态变量或者静态函数。相比于成员内部类对外部类的依赖，静态内部类基本不依赖外部类。通过其官方名称”<strong><em>static nested classes</em></strong>“(静态嵌套类)，更能说明其与外部类没有关系，只是自己的类声明嵌套在外部类的java文件中。静态内部类只能访问外部类的静态成员和方法，这点非常好理解，因为静态内部类和外部类没关系。静态内部类和静态变量或方法一样可以使用public，private，protected或者默认的访问权限控制符声明，这点也很好理解。下面我们给出个静态内部类的示例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">OutClass</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span> k=<span class="number">3</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> i;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">OutClass</span><span class="params">(<span class="keyword">int</span> i)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.i = i;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">InnerClass</span> </span>&#123;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">int</span> j;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">InnerClass</span><span class="params">(<span class="keyword">int</span> j)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">this</span>.j = j;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">print</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            System.out.println(<span class="string">"OutClass.k = "</span> + k);</span><br><span class="line">            System.out.println(<span class="string">"InnerClass.j = "</span> + j);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//测试类</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">OutClassTest</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String [] args)</span> </span>&#123;</span><br><span class="line">        OutClass.InnerClass innerClass = <span class="keyword">new</span> OutClass.InnerClass(<span class="number">2</span>);</span><br><span class="line">        innerClass.print();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>​       示例很简单，从测试类可以看出内部类的声明不再依赖外部类，可以完全独立声明对象，其实静态内部类不再持有外部类的引用，下面我们看下反编译的class文件：</p>
+<p><img src="/Users/yuanqiongqiong/blog/source/_posts/%E8%B0%88%E8%B0%88java%E5%86%85%E9%83%A8%E7%B1%BB/%E9%9D%99%E6%80%81%E5%86%85%E9%83%A8%E7%B1%BB%E5%8F%8D%E7%BC%96%E8%AF%91.png" alt></p>
+<h2 id="匿名内部类"><a href="#匿名内部类" class="headerlink" title="匿名内部类"></a>匿名内部类</h2><p>​      对于匿名内部类，大家肯定在日常开发中都有使用但却不知道叫法，比如函数回调，线程声明等都会使用匿名内部类。如下面这段常用的代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ThreadTest</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String []args)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">final</span> User user= <span class="keyword">new</span> User(<span class="string">"chenxiaosuo"</span>);</span><br><span class="line">        Thread thread = <span class="keyword">new</span> Thread(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                System.out.println(<span class="string">"user = "</span> + user);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;, <span class="string">"threadtest"</span>);</span><br><span class="line">        thread.start();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">User</span> </span>&#123;</span><br><span class="line">        <span class="keyword">private</span> String name;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">User</span><span class="params">(String name)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">this</span>.name = name;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> String <span class="title">getName</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> name;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setName</span><span class="params">(String name)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">this</span>.name = name;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="string">"User&#123;"</span> +</span><br><span class="line">                    <span class="string">"name='"</span> + name + <span class="string">'\''</span> +</span><br><span class="line">                    <span class="string">'&#125;'</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>​       Runable是一个接口，我们通过new来实现了一个匿名内部类，这个类没有类名(其实真实编译后会以”外部类$数字”的形式作为类名)。</p>
+<p>​       不知道大家有没有这个困惑，在匿名内部类中使用的变量必须声明为final类型，表示变量不可变，否则编译报错，如上的变量user。我们先分析下上述代码，变量user是个局部变量，当函数testAnonymousInnerClass结束后会回收，而此时threadtest可能还在继续执行，如果访问变量user应该会报错，而实际却不会出现这种情况。我们看下编译后的类文件发生了什么，匿名内部会复制一份访问的变量到内部，这样就解决上述的声明周期问题。因为这种拷贝，如果java允许这个变量发生改变，那么肯定就造成了数据不一致的问题，这也就解释为什么匿名内部类的访问的变量必须为final类型了。</p>
+<p><img src="/Users/yuanqiongqiong/blog/source/_posts/%E8%B0%88%E8%B0%88java%E5%86%85%E9%83%A8%E7%B1%BB/%E5%8C%BF%E5%90%8D%E5%86%85%E9%83%A8%E7%B1%BB%E5%8F%8D%E7%BC%96%E8%AF%91.png" alt></p>
+<h2 id="局部内部类"><a href="#局部内部类" class="headerlink" title="局部内部类"></a>局部内部类</h2><p>​      可以把局部内部类与我们函数里的<strong>局部变量</strong>作为类比，局部内部类就是声明在一个函数或者某个作用域中的内部类。可以看出局部内部类只作用于其所声明的函数或者局部作用域中，因此在局部内部类中不能使用public，private和protected。由于局部内部类比较简单，这里不再举例说明。</p>
+<h1 id="内部类作用"><a href="#内部类作用" class="headerlink" title="内部类作用"></a>内部类作用</h1><p>​      以上介绍了内部的使用及相关分析，最后我们再思考一个问题，为什么要使用内部类？在java编程思想中讲到，使用内部类可以使得java类继承多个类，使得java多继承的方案更加的完善。<strong>是不是很抽象？</strong>下面我这边总结两个我感觉使用内部类的理由：</p>
+<p>（1）使用成员内部类可以使得内部类访问外部类的成员变量；</p>
+<p>（2）使用匿名内部类使得我们代码变得更简洁，不需要定义一些只是用一次的类；</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p>java编程思想</p>
+<p><a href="https://juejin.im/post/5a69a2ad6fb9a01c9658559c#heading-15" target="_blank" rel="noopener">https://juejin.im/post/5a69a2ad6fb9a01c9658559c#heading-15</a></p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+      <div>
+        <div id="reward-container">
+  <div>多谢支持，共同成长！</div>
+  <button id="reward-button" disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    Donate
+  </button>
+  <div id="qr" style="display: none;">
+
+    
+      
+      
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/wechatPay.jpeg" alt="袁琼琼 WeChat Pay">
+        <p>WeChat Pay</p>
+      </div>
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/java/" rel="tag"># java</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/06/11/ThreadLocal原理分析/" rel="next" title="ThreadLocal原理分析">
+                <i class="fa fa-chevron-left"></i> ThreadLocal原理分析
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.png" alt="袁琼琼">
+            
+              <p class="site-author-name" itemprop="name">袁琼琼</p>
+              <div class="site-description motion-element" itemprop="description">技术学习，心得分享！</div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives">
+                
+                    <span class="site-state-item-count">15</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">7</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">12</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+
+          
+
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://techwei.cn/" title="https://techwei.cn/" rel="noopener" target="_blank">宏伟的技术博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://jacobchang.cn/" title="https://jacobchang.cn/" rel="noopener" target="_blank">黄小豆的博客</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#概述"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#内部类介绍"><span class="nav-number">2.</span> <span class="nav-text">内部类介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#成员内部类"><span class="nav-number">2.1.</span> <span class="nav-text">成员内部类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#静态内部类"><span class="nav-number">2.2.</span> <span class="nav-text">静态内部类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#匿名内部类"><span class="nav-number">2.3.</span> <span class="nav-text">匿名内部类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#局部内部类"><span class="nav-number">2.4.</span> <span class="nav-text">局部内部类</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#内部类作用"><span class="nav-number">3.</span> <span class="nav-text">内部类作用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        
+<div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">袁琼琼</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> v3.8.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.1.0</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-user"></i>
+    </span>
+    <span class="site-uv" title="Total Visitors">
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+  
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-eye"></i>
+    </span>
+    <span class="site-pv" title="Total Views">
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.1.0"></script>
+
+  <script src="/js/motion.js?v=7.1.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/schemes/muse.js?v=7.1.0"></script>
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.1.0"></script>
+<script src="/js/post-details.js?v=7.1.0"></script>
+
+
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.1.0"></script>
+
+
+  
+
+  
+
+  
+
+  
+  
+
+<script src="//cdn1.lncld.net/static/js/3.11.1/av-min.js"></script>
+
+
+
+<script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+
+<script>
+  var GUEST = ['nick', 'mail', 'link'];
+  var guest = 'nick,mail,link';
+  guest = guest.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#comments',
+    verify: false,
+    notify: false,
+    appId: 'h3e9M2CvwVlUBVll8N9zmaDr-gzGzoHsz',
+    appKey: 'aWINu6iJHtHaSSq8j9p7gJWN',
+    placeholder: '共同成长！',
+    avatar: 'mm',
+    meta: guest,
+    pageSize: '10' || 10,
+    visitor: false,
+    lang: 'zh-cn' || 'zh-cn'
+  });
+</script>
+
+
+
+
+  
+
+
+  
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
