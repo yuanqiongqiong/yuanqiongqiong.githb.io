@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://www.yuanqiongqiong.cn/"/>
-  <updated>2019-06-17T17:08:46.000Z</updated>
+  <updated>2019-07-04T15:20:11.000Z</updated>
   <id>https://www.yuanqiongqiong.cn/</id>
   
   <author>
@@ -15,6 +15,31 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>为什么java nio被称为同步非阻塞io?</title>
+    <link href="https://www.yuanqiongqiong.cn/2019/07/04/%E4%B8%BA%E4%BB%80%E4%B9%88java-nio%E8%A2%AB%E7%A7%B0%E4%B8%BA%E5%90%8C%E6%AD%A5%E9%9D%9E%E9%98%BB%E5%A1%9Eio/"/>
+    <id>https://www.yuanqiongqiong.cn/2019/07/04/为什么java-nio被称为同步非阻塞io/</id>
+    <published>2019-07-04T10:43:10.000Z</published>
+    <updated>2019-07-04T15:20:11.000Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>​       java nio可以被称为java new io，因为其提供了一种有别于传统java io的io工作方式。同时，由于java nio是同步非阻塞的，其也被称为non-blocking io（非阻塞io）。但是，为什么java nio是同步非阻塞的？本文将对这个问题进行深入的解析。</p><h1 id="概念解析"><a href="#概念解析" class="headerlink" title="概念解析"></a>概念解析</h1><p>​      在对本文的问题进行分析之前，我们先看下同步异步，阻塞非则塞者两对概念。</p><p>（1）同步和异步</p><p>​       同步和异步描述的是一种消息通知的机制，主动等待消息返回还是被动接受消息。同步io指的是调用方通过主动等待获取调用返回的结果来获取消息通知，而异步io指的是被调用方通过某种方式（如，回调函数）来通知调用方获取消息。</p><p>（2）阻塞非阻塞</p><p>​       阻塞和非阻塞描述的是调用方在获取消息过程中的状态，阻塞等待还是立刻返回。阻塞io指的是调用方在获取消息的过程中会挂起阻塞，知道获取到消息，而非阻塞io指的是调用方在获取io的过程中会立刻返回而不进行挂起。</p><h1 id="为什么java-nio是同步非阻塞的？"><a href="#为什么java-nio是同步非阻塞的？" class="headerlink" title="为什么java nio是同步非阻塞的？"></a>为什么java nio是同步非阻塞的？</h1><p>​      我们知道java nio是基于io多路复用模型，也就是我们经常提到的select，poll，epoll。io 多路复用本质是同步io，其需要调用方在读写事件就绪时主动去进行读写。在java nio中，通过selector来获取就绪的事件，当selector上监听的channel中没有就绪的读写时间时，其可以直接返回，或者设置一段超时后返回。可以看出java nio可以实现非则塞，而不像传统io里必须则塞当前线程直到可读或可写。所以，java nio可以实现非阻塞。我们简单看下java nio处理连接和java socket 处理连接的方式：</p><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//java nio</span></span><br><span class="line"><span class="keyword">while</span>(<span class="keyword">true</span>) &#123;</span><br><span class="line">  ......</span><br><span class="line">  selector.select(<span class="number">1</span>);</span><br><span class="line">  Set&lt;SelectionKey&gt; selectionKeySet= selector.selectedKeys();</span><br><span class="line">  ......</span><br><span class="line">  <span class="comment">//处理selectionKeySet中事件,线程没有阻塞</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//java socket处理连接，线程会阻塞</span></span><br><span class="line"><span class="keyword">while</span>(<span class="keyword">true</span>) &#123;</span><br><span class="line">  ......</span><br><span class="line">  Socket socket = serverSocket.accept();</span><br><span class="line">  InputStream in = socket.getInputStream(); </span><br><span class="line">  ......</span><br><span class="line">  <span class="comment">//处理in中内容</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p>​       本文篇幅很短，只是为了说明本人最近的疑虑，因为之前我一直觉得java nio也是阻塞的。希望本文可以对有相似疑虑的同学有所帮助，共同成长！</p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h1 id=&quot;概述&quot;&gt;&lt;a href=&quot;#概述&quot; class=&quot;headerlink&quot; title=&quot;概述&quot;&gt;&lt;/a&gt;概述&lt;/h1&gt;&lt;p&gt;​       java nio可以被称为java new io，因为其提供了一种有别于传统java io的io工作方式。同时，由于java
+      
+    
+    </summary>
+    
+      <category term="java网络编程" scheme="https://www.yuanqiongqiong.cn/categories/java%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/"/>
+    
+    
+      <category term="java nio" scheme="https://www.yuanqiongqiong.cn/tags/java-nio/"/>
+    
+  </entry>
   
   <entry>
     <title>谈谈java中的内部类</title>
@@ -253,9 +278,9 @@
     
       <category term="java" scheme="https://www.yuanqiongqiong.cn/tags/java/"/>
     
-      <category term="并发" scheme="https://www.yuanqiongqiong.cn/tags/%E5%B9%B6%E5%8F%91/"/>
-    
       <category term="多线程" scheme="https://www.yuanqiongqiong.cn/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/"/>
+    
+      <category term="并发" scheme="https://www.yuanqiongqiong.cn/tags/%E5%B9%B6%E5%8F%91/"/>
     
   </entry>
   
@@ -282,9 +307,9 @@
     
       <category term="java" scheme="https://www.yuanqiongqiong.cn/tags/java/"/>
     
-      <category term="并发" scheme="https://www.yuanqiongqiong.cn/tags/%E5%B9%B6%E5%8F%91/"/>
-    
       <category term="多线程" scheme="https://www.yuanqiongqiong.cn/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/"/>
+    
+      <category term="并发" scheme="https://www.yuanqiongqiong.cn/tags/%E5%B9%B6%E5%8F%91/"/>
     
   </entry>
   
@@ -361,9 +386,9 @@
       <category term="jvm" scheme="https://www.yuanqiongqiong.cn/categories/jvm/"/>
     
     
-      <category term="jvm" scheme="https://www.yuanqiongqiong.cn/tags/jvm/"/>
-    
       <category term="java" scheme="https://www.yuanqiongqiong.cn/tags/java/"/>
+    
+      <category term="jvm" scheme="https://www.yuanqiongqiong.cn/tags/jvm/"/>
     
   </entry>
   
