@@ -112,7 +112,7 @@
 <meta property="og:description" content="简介​       异常是我们日常开发中一定会遇到的问题，如果我们不了解异常的使用及处理方法，那么我们会恐惧遇到异常机制。但是如果我们对异常的机制有了一定的了解，我们可以通过异常方便的发现程序的问题及优雅的处理这些异常，我们甚至可以通过异常机制使得代码更加的整洁，清晰。本篇博客将会简单的对java的异常机制进行介绍。 java异常基础知识​       异常也就是不正常，是程序中出现了没有预料到的">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://www.yuanqiongqiong.cn/2019/11/15/谈谈java的异常机制/java异常备忘.png">
-<meta property="og:updated_time" content="2019-11-17T10:14:57.000Z">
+<meta property="og:updated_time" content="2019-11-17T10:30:40.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="谈谈java的异常机制">
 <meta name="twitter:description" content="简介​       异常是我们日常开发中一定会遇到的问题，如果我们不了解异常的使用及处理方法，那么我们会恐惧遇到异常机制。但是如果我们对异常的机制有了一定的了解，我们可以通过异常方便的发现程序的问题及优雅的处理这些异常，我们甚至可以通过异常机制使得代码更加的整洁，清晰。本篇博客将会简单的对java的异常机制进行介绍。 java异常基础知识​       异常也就是不正常，是程序中出现了没有预料到的">
@@ -416,7 +416,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2019-11-17 18:14:57" itemprop="dateModified" datetime="2019-11-17T18:14:57+08:00">2019-11-17</time>
+                <time title="Modified: 2019-11-17 18:30:40" itemprop="dateModified" datetime="2019-11-17T18:30:40+08:00">2019-11-17</time>
               
             
           </span>
@@ -471,10 +471,10 @@
 
       
         <h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>​       异常是我们日常开发中一定会遇到的问题，如果我们不了解异常的使用及处理方法，那么我们会恐惧遇到异常机制。但是如果我们对异常的机制有了一定的了解，我们可以通过异常方便的发现程序的问题及优雅的处理这些异常，我们甚至可以通过异常机制使得代码更加的整洁，清晰。本篇博客将会简单的对java的异常机制进行介绍。</p>
-<h1 id="java异常基础知识"><a href="#java异常基础知识" class="headerlink" title="java异常基础知识"></a>java异常基础知识</h1><p>​       异常也就是不正常，是程序中出现了没有预料到的错误情况，它会干扰程序的正常执行，将程序控制券转移到异常处理器。下面看一个java异常基础知识的备忘单：</p>
+<h1 id="java异常基础知识"><a href="#java异常基础知识" class="headerlink" title="java异常基础知识"></a>java异常基础知识</h1><p>​       异常也就是不正常，是程序中出现了没有预料到的错误情况，它会干扰程序的正常执行，将程序控制权转移到异常处理器。下面看一个java异常基础知识的备忘单：</p>
 <p><img src="/2019/11/15/谈谈java的异常机制/java异常备忘.png" alt></p>
-<p>​        如上图所示，Throwable是java所有异常类的父类，Error和Exception其两个子类。其中Error代表程序发生了严重的错误，这种错误程序是无法处理的，只能终止，如我们常见的OutOfMemoryError，StackOverflowError。而Exception是程序本身可以处理的异常，可以分为RuntimeException 和 Checked Exception。其中RuntimeException 在程序编译器不会对该异常进行检查，是一种UnChecked Exception，常见的RuntimeException有NullPointException，ClassCastException。而Checked Exception是一类异常的统称，Exception的所有非RuntimeException都是Checked Exception，编译器会对这种异常进行检查，要么捕获这种异常进行处理，要么继续抛出，常见的Checked Exceptiony有IOException，ClassNotFoundException等。</p>
-<p>​        上图还给出了线上环境出现频率最高的10中异常，可以看出NPE高居榜首，一个不会判空的程序员不是一个合格的程序员。</p>
+<p>​        如上图所示，Throwable是java所有异常类的父类，Error和Exception是其两个子类。其中Error代表程序发生了严重的错误，这种错误程序是无法处理的，只能终止，如我们常见的OutOfMemoryError，StackOverflowError。而Exception是程序本身可以处理的异常，可以分为RuntimeException 和 Checked Exception。其中RuntimeException 在程序编译器不会对该异常进行检查，是一种UnChecked Exception，常见的RuntimeException有NullPointException，ClassCastException。而Checked Exception是一类异常的统称，Exception的所有非RuntimeException都是Checked Exception，编译器会对这种异常进行检查，要么捕获这种异常进行处理，要么继续抛出，常见的Checked Exceptiony有IOException，ClassNotFoundException等。</p>
+<p>​        上图还给出了线上环境出现频率最高的10种异常，可以看出NPE高居榜首，一个不会判空的程序员不是一个合格的程序员。</p>
 <h1 id="java异常机制原理分析"><a href="#java异常机制原理分析" class="headerlink" title="java异常机制原理分析"></a>java异常机制原理分析</h1><p>​        我们知道java通过try…catch…finally语法来处理java异常，实际java编译器会将try…catch…finally编译生成一个异常表（Exception table），异常记录表记录了异常发生的指令范围及异常处理器的指令位置。下面我们通过一个简单的示例来看下异常表，代码如下，就是简单的try…catch…finally语句。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ExceptionTest</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String [] args)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> Exception();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            <span class="comment">//不做任何操作</span></span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            <span class="comment">//不做任何操作</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>​        我们将上述代码编译为字节码如下，异常表说明0-8行代码指令发生任何类型是java/lang/Exception的异常（包括其子类），都执行第8行指令（这里因为catch里不做任何操作），0-9行有任何异常都只执行第12行。看到这里也就基本try…catch是如何改变指令的执行流程的了。</p>

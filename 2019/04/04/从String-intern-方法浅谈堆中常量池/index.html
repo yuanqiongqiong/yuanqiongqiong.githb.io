@@ -104,7 +104,7 @@
 
 
   <meta name="description" content="简介​       String是我们最常用的一个类，和普通java类一样其对象会存在java堆中。但是String类有其特殊之处，可以通过new方法生成，也可以通过带引号的字符串常量直接赋值。在JDK7之前，字符串常量是存在永久带Perm 区的，JDK7开始在将常量池迁移到堆中，这个变化也导致了String的新特性，下面我们慢慢进行介绍。 String.intern()方法简单的说，String">
-<meta name="keywords" content="java,jvm">
+<meta name="keywords" content="jvm,java">
 <meta property="og:type" content="article">
 <meta property="og:title" content="从String.intern()方法浅谈堆中常量池">
 <meta property="og:url" content="https://www.yuanqiongqiong.cn/2019/04/04/从String-intern-方法浅谈堆中常量池/index.html">
@@ -580,9 +580,9 @@ System.out.println(s13==s14.intern());//false</code></p>
       
         <div class="post-tags">
           
-            <a href="/tags/java/" rel="tag"># java</a>
-          
             <a href="/tags/jvm/" rel="tag"># jvm</a>
+          
+            <a href="/tags/java/" rel="tag"># java</a>
           
         </div>
       
