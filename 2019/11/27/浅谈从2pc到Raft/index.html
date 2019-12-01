@@ -103,22 +103,21 @@
 
 
 
-  <meta name="description" content="背景​        在日常的学习和问题排查中，我们经常会遇到full gc，cms gc，magor gc这几个概念，而对这几个概念的理解可能会有些偏差。如果单纯从名词解析上来讲，执着的弄清楚这几个概念可能就是在浪费时间。但是，如果可以通过对概念的辨析加深对java垃圾回收的理解，这些时间也是值得的。这里，我将对这几个概念进一步理解，纠正自己以前的错误认知。 详解cms gc​        c">
+  <meta name="description" content="概述​       CAP理论告诉我们由于分布式系统总是存在通信异常，网络分区，节点故障等问题，无法同时保证一致性，可用性，分区容错性。而分区容错性是分布式系统必备的特性，因为分布式系统一定是由不同的机器组成，而这也必然会导致网络分区。因此，我们的系统往往会是可用性和一致性之前做选择。本文将为大家详细介绍分布是一致性保证方案–2pc和3pc。 分布式一致性协议​       我们常常遇到的分布式一">
+<meta name="keywords" content="分布式一致性,2pc,Raft">
 <meta property="og:type" content="article">
-<meta property="og:title" content="对full gc, cms gc, magor gc的疑问">
-<meta property="og:url" content="https://www.yuanqiongqiong.cn/2019/04/04/gc定义解析/index.html">
+<meta property="og:title" content="浅谈分布式一致性协议--2pc和3pc">
+<meta property="og:url" content="https://www.yuanqiongqiong.cn/2019/11/27/浅谈从2pc到Raft/index.html">
 <meta property="og:site_name" content="袁琼琼的博客">
-<meta property="og:description" content="背景​        在日常的学习和问题排查中，我们经常会遇到full gc，cms gc，magor gc这几个概念，而对这几个概念的理解可能会有些偏差。如果单纯从名词解析上来讲，执着的弄清楚这几个概念可能就是在浪费时间。但是，如果可以通过对概念的辨析加深对java垃圾回收的理解，这些时间也是值得的。这里，我将对这几个概念进一步理解，纠正自己以前的错误认知。 详解cms gc​        c">
+<meta property="og:description" content="概述​       CAP理论告诉我们由于分布式系统总是存在通信异常，网络分区，节点故障等问题，无法同时保证一致性，可用性，分区容错性。而分区容错性是分布式系统必备的特性，因为分布式系统一定是由不同的机器组成，而这也必然会导致网络分区。因此，我们的系统往往会是可用性和一致性之前做选择。本文将为大家详细介绍分布是一致性保证方案–2pc和3pc。 分布式一致性协议​       我们常常遇到的分布式一">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://www.yuanqiongqiong.cn/2019/04/04/gc定义解析/gc4.png">
-<meta property="og:image" content="https://www.yuanqiongqiong.cn/2019/04/04/gc定义解析/gc5.png">
-<meta property="og:image" content="https://www.yuanqiongqiong.cn/2019/04/04/gc定义解析/gc6.png">
-<meta property="og:image" content="https://www.yuanqiongqiong.cn/2019/04/04/gc定义解析/gc7.png">
-<meta property="og:updated_time" content="2019-04-05T05:41:58.000Z">
+<meta property="og:image" content="https://www.yuanqiongqiong.cn/2019/11/27/浅谈从2pc到Raft/2pc.png">
+<meta property="og:image" content="https://www.yuanqiongqiong.cn/2019/11/27/浅谈从2pc到Raft/3pc.png">
+<meta property="og:updated_time" content="2019-12-01T13:15:50.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="对full gc, cms gc, magor gc的疑问">
-<meta name="twitter:description" content="背景​        在日常的学习和问题排查中，我们经常会遇到full gc，cms gc，magor gc这几个概念，而对这几个概念的理解可能会有些偏差。如果单纯从名词解析上来讲，执着的弄清楚这几个概念可能就是在浪费时间。但是，如果可以通过对概念的辨析加深对java垃圾回收的理解，这些时间也是值得的。这里，我将对这几个概念进一步理解，纠正自己以前的错误认知。 详解cms gc​        c">
-<meta name="twitter:image" content="https://www.yuanqiongqiong.cn/2019/04/04/gc定义解析/gc4.png">
+<meta name="twitter:title" content="浅谈分布式一致性协议--2pc和3pc">
+<meta name="twitter:description" content="概述​       CAP理论告诉我们由于分布式系统总是存在通信异常，网络分区，节点故障等问题，无法同时保证一致性，可用性，分区容错性。而分区容错性是分布式系统必备的特性，因为分布式系统一定是由不同的机器组成，而这也必然会导致网络分区。因此，我们的系统往往会是可用性和一致性之前做选择。本文将为大家详细介绍分布是一致性保证方案–2pc和3pc。 分布式一致性协议​       我们常常遇到的分布式一">
+<meta name="twitter:image" content="https://www.yuanqiongqiong.cn/2019/11/27/浅谈从2pc到Raft/2pc.png">
 
 
 
@@ -128,7 +127,7 @@
 
   
   
-  <link rel="canonical" href="https://www.yuanqiongqiong.cn/2019/04/04/gc定义解析/">
+  <link rel="canonical" href="https://www.yuanqiongqiong.cn/2019/11/27/浅谈从2pc到Raft/">
 
 
 
@@ -138,7 +137,7 @@
   };
 </script>
 
-  <title>对full gc, cms gc, magor gc的疑问 | 袁琼琼的博客</title>
+  <title>浅谈分布式一致性协议--2pc和3pc | 袁琼琼的博客</title>
   
 
 
@@ -358,7 +357,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://www.yuanqiongqiong.cn/2019/04/04/gc定义解析/">
+    <link itemprop="mainEntityOfPage" href="https://www.yuanqiongqiong.cn/2019/11/27/浅谈从2pc到Raft/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="袁琼琼">
@@ -375,7 +374,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">对full gc, cms gc, magor gc的疑问
+          <h1 class="post-title" itemprop="name headline">浅谈分布式一致性协议--2pc和3pc
 
               
             
@@ -401,7 +400,7 @@
                 
               
 
-              <time title="Created: 2019-04-04 09:34:54" itemprop="dateCreated datePublished" datetime="2019-04-04T09:34:54+08:00">2019-04-04</time>
+              <time title="Created: 2019-11-27 20:51:45" itemprop="dateCreated datePublished" datetime="2019-11-27T20:51:45+08:00">2019-11-27</time>
             
 
             
@@ -418,7 +417,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2019-04-05 13:41:58" itemprop="dateModified" datetime="2019-04-05T13:41:58+08:00">2019-04-05</time>
+                <time title="Modified: 2019-12-01 21:15:50" itemprop="dateModified" datetime="2019-12-01T21:15:50+08:00">2019-12-01</time>
               
             
           </span>
@@ -435,7 +434,7 @@
                 <span class="post-meta-item-text">In</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/jvm/" itemprop="url" rel="index"><span itemprop="name">jvm</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/分布式相关/" itemprop="url" rel="index"><span itemprop="name">分布式相关</span></a></span>
 
                 
                 
@@ -454,8 +453,8 @@
                 </span>
             
                 <span class="post-meta-item-text">Comments: </span>
-                <a href="/2019/04/04/gc定义解析/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/04/04/gc定义解析/" itemprop="commentCount"></span>
+                <a href="/2019/11/27/浅谈从2pc到Raft/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/11/27/浅谈从2pc到Raft/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -490,19 +489,33 @@
       
 
       
-        <h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>​        在日常的学习和问题排查中，我们经常会遇到full gc，cms gc，magor gc这几个概念，而对这几个概念的理解可能会有些偏差。如果单纯从名词解析上来讲，执着的弄清楚这几个概念可能就是在浪费时间。但是，如果可以通过对概念的辨析加深对java垃圾回收的理解，这些时间也是值得的。这里，我将对这几个概念进一步理解，纠正自己以前的错误认知。</p>
-<h1 id="详解"><a href="#详解" class="headerlink" title="详解"></a>详解</h1><h3 id="cms-gc"><a href="#cms-gc" class="headerlink" title="cms gc"></a>cms gc</h3><p>​        cms垃圾回收算法是我们线上使用的老年垃圾回收算法，以其较短的停顿时间而被广泛应用，也是jvm中最重要的一个垃圾回收算法。顾名思义，cms gc就是cms回收算法中的各个步骤，这里既有导致STW的初始标记阶段和最终标记阶段，也有和应用线程并发执行的其他阶段，它们都是cms gc。</p>
-<h3 id="full-gc"><a href="#full-gc" class="headerlink" title="full gc"></a>full gc</h3><p>​        我理解full gc就是针对老年代/metaspace区域（Java8之前为永久带）进行的可以导致STW的gc。这里面有个重要的点，只有导致STW的gc才能成为full gc。以我们对cms 算法的了解，如果cms算法正常运行，会发生两次STW。那么以我们讲的概念这样的cms gc会带到两次full gc，下面我们通过jstate命令以及gc日志中cms gc发生的次数来验证这个问题。以我们线上一台机器为例：我们看下统计full gc的数量如下，看出发生了4次full gc。</p>
-<p><img src="/2019/04/04/gc定义解析/gc4.png" alt="gc4"></p>
-<p>​       我们看gc日志看到full 2是最大的cms数量，也就是发生两次cms gc，如上面我们的计算相符。具体如下图：</p>
-<p><img src="/2019/04/04/gc定义解析/gc5.png" alt="gc5"></p>
-<p>​         所以可以这样说，cms中的STW的阶段属于full gc，其他阶段不属于full gc。</p>
-<p>​        正常的full的时间不会很长，如上面的平均时间是0.718/4=0.1795s，但是异常情况下，如如果发生了promotion failed，或者concurrent model failure现象，STW的时间就会很长。这两种情况下的gc并不是由gc线程来执行的，<strong>而是由vm thread 执行的</strong>，整个过程都会STW。先说promotion failed，这是由于在年轻带发生young gc时，eden区晋升的对象，在survivor中发不下，导致年轻带放弃young gc而直接由vm 线程触发一次老年代的gc，这个过程只有单线程执行，完全的STW，因此时间比较长。下面我们看一个promotion failed的例子，我们看到发生了9次full gc。</p>
-<p><img src="/2019/04/04/gc定义解析/gc6.png" alt></p>
-<p>​        查看gc日志，我们看到第五次cms gc是promotion failed引起的且时间用了3.84s，我们计算full gc的次数为4次正常的cms gc带来的8次full gc 加 一次vm thread触发的full gc，一共9次。</p>
-<p><img src="/2019/04/04/gc定义解析/gc7.png" alt></p>
-<p>​        说完promotion failed，我们要说一下concurrent model failure，如果cms gc在执行过程中vm 线程触发了一次full gc，那么这个时候就会产生concurrent model failure，这个时候问题会更加严重，垃圾回收算法会退化为Serail Old，单线程执行，切完全的STW。其实，这里讲的vm 线程触发的full gc和正常的cms gc的实现都在concurrentMarkSweepGeneration.cpp，只不过有着不同的执行路径，vm线程触发的full gc又被称为The background collector，而正常的cms算法被称为The foreground collector。从英文名字中可以清晰的明白前者是后台触发的，而后者是由相应线程主动触发的。</p>
-<h3 id="magor-gc"><a href="#magor-gc" class="headerlink" title="magor gc"></a>magor gc</h3><p>​       我理解的magor gc就是full gc，他们是同一个概念。</p>
+        <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>​       CAP理论告诉我们由于分布式系统总是存在通信异常，网络分区，节点故障等问题，无法同时保证一致性，可用性，分区容错性。而分区容错性是分布式系统必备的特性，因为分布式系统一定是由不同的机器组成，而这也必然会导致网络分区。因此，我们的系统往往会是可用性和一致性之前做选择。本文将为大家详细介绍分布是一致性保证方案–2pc和3pc。</p>
+<h1 id="分布式一致性协议"><a href="#分布式一致性协议" class="headerlink" title="分布式一致性协议"></a>分布式一致性协议</h1><p>​       我们常常遇到的分布式一致性问题大致有两类：</p>
+<p>（1）如何保证一次写操作在分布式系统的原子性，即保证要么操作在所有节点中都成功，要么都失败；</p>
+<p>（2）如何保证分布式系统快速的就某个值达成一致性（如选主，主从同步等），并且即使发生宕机或者网络异常都不会破坏整个系统的一致性。</p>
+<p>​        对于问题（1），两阶段提交协议2pc和三阶段提交协议3pc是常用的方式，如绝大部分关系型数据库都使用2pc实现分布式事务，这也是本篇博客要介绍的内容。问题（2）就更加的有意思了，我们知道高可用性系统（HA）最常用的解决方式就是维护多个副本来保证主宕机后，副本可以快速顶上，问题（2）就是在主副系统中必然面对的问题。Paxos，Raft协议和Zab协议就是为了解决该问题，本人计划在下一篇博客中来介绍该问题的解决方案。</p>
+<p>​        当然两类问题并不是完全隔离的，问题（1）是保证一次操作的原子性，问题（2）中必然会涉及写操作在主副本间的写操作提交。在后面的讲解中，我们将看到无论Raft协议还是Zab协议都会借鉴2pc的思想进行写操作的提交。</p>
+<h1 id="两阶段提交协议2pc"><a href="#两阶段提交协议2pc" class="headerlink" title="两阶段提交协议2pc"></a>两阶段提交协议2pc</h1><p>​       首先我们再看下问题（1），要想解决该问题必须有一定机制让系统中的节点了解到其他节点是否<strong>全部执行成功</strong>或者<strong>存在执行失败</strong>，这样节点才能根据该信息来进行回滚或者提交。2pc和3pc通过引入“协调者”角色来实现这个功能，分布式系统中节点的执行提交统一由协调者调度。</p>
+<p>​       顾名思义，2pc就是将以此事务的提交分为两个阶段：提交事务请求和执行事务请求。具体流程如下图所示，其中提交阶段为1，2，3，执行事务阶段为4，5，6。</p>
+<p><img src="/2019/11/27/浅谈从2pc到Raft/2pc.png" alt></p>
+<p><strong>提交事务阶段：</strong></p>
+<p>1.协调器向分布式系统的所有节点（参与者）发送事务询问请求，询问参与者是否可以执行本次事务；</p>
+<p>2.各个参与者收到请求后执行事务；</p>
+<p>3.各个参与者将事务的执行结果返回给协调者；</p>
+<p><strong>执行事务请求阶段：</strong></p>
+<p>4.如果所有参与者都执行成功，事务协调者向参与者发送commit命令；如果存在一个参与者执行失败，事务协调者向参与者发送rollback命令；</p>
+<p>5.事务参与者收到commit命令后就提交本次事务的执行；如果事务参与者收到rollback命令就回滚本次执行；</p>
+<p>6.事务参与者向协调者发送执行的ack；</p>
+<p>​        从上述流程，我们看到2pc用最朴实的方式实现了一套分布式事务解决方案，该协议简单明了易于实现，被广泛应用，如关系型数据库中的分布式事务一般都是通过2pc实现的。但是该协议依然会存在以下问题：</p>
+<p>（1）同步阻塞问题：在参与者执行完步骤2后，其持有的资源处于锁定状态，一直等到步骤5执行完成后才会释放资源，这将严重影响参与者的并发性；</p>
+<p>（2）单点问题：整个协议的运行完全依赖协调者来执行，一单协调者出现问题整个系统基本处于崩溃状态；</p>
+<p>（3）数据不一致性：分布式环境中网络最无法保证的，假设在步骤4中参与者A收到commit命令，而参与者B没有收到commit命令或者收到命令后参与者B崩溃。这样参与者A提交了事务，参与者B没有提交事务就会造成数据的不一致现象。</p>
+<h1 id="三阶段提交协议3pc"><a href="#三阶段提交协议3pc" class="headerlink" title="三阶段提交协议3pc"></a>三阶段提交协议3pc</h1><p>​        基于2pc的上述问题，3pc被提出来。如上分析，2pc协议在步骤2执行后，其持有的资源一直被锁定直到整个流程结束，这是一个很长的过程。是否可以将资源锁定后置，已减小同步阻塞的范围？3pc就是按照这个思路去解决2pc中的同步阻塞问题。3pc分为3个阶段分别是canCommit阶段，preCommit阶段，doCommit阶段，其中preCommit阶段和doCommit阶段流程大致和2pc一致，而canCommit阶段是3pc新增的，具体流程如下：</p>
+<p><img src="/2019/11/27/浅谈从2pc到Raft/3pc.png" alt></p>
+<p>​        通过在预提交前引入事务询问canCommit，可以确保锁定资源的请求大概率是事务执行成功的，进而可以在一定程度上缓解同步阻塞问题。相比于2pc，3pc中参与者引入了超时中断机制，在doCommit阶段，如果由于网络原因或者协调者单点故障，参与者一直没有收到doCommit命令，那么参与者会在等待一定时间后触发超时机制，自动提交事务。做出这样的操作是因为进入doCommit阶段，大概率是需要成功提交的。当然，<strong>也有可能是协调者的abort命令丢失，这种情况下就会造成数据不一致问题</strong>，这在2pc协议中也是存在，解决这个问题只能通过我们Paxos，Raft协议来完成。</p>
+<p>​        可以看到相比于2pc，3pc在一定程度上降低了参与则的阻塞范围，并在协调者出现单点故障的时候参与者可以通过超时机制继续提交事务</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p>《从Paxos到Zookeeper分布式一致性原理与实践》</p>
+<p>​        </p>
 
       
     </div>
@@ -554,6 +567,16 @@
 
     <footer class="post-footer">
       
+        <div class="post-tags">
+          
+            <a href="/tags/分布式一致性/" rel="tag"># 分布式一致性</a>
+          
+            <a href="/tags/2pc/" rel="tag"># 2pc</a>
+          
+            <a href="/tags/Raft/" rel="tag"># Raft</a>
+          
+        </div>
+      
 
       
       
@@ -563,8 +586,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/04/03/gc日志/" rel="next" title="从gc日志学习gc相关知识">
-                <i class="fa fa-chevron-left"></i> 从gc日志学习gc相关知识
+              <a href="/2019/11/15/谈谈java的异常机制/" rel="next" title="谈谈java的异常机制">
+                <i class="fa fa-chevron-left"></i> 谈谈java的异常机制
               </a>
             
           </div>
@@ -572,10 +595,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2019/04/04/从String-intern-方法浅谈堆中常量池/" rel="prev" title="从String.intern()方法浅谈堆中常量池">
-                从String.intern()方法浅谈堆中常量池 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -797,7 +816,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#背景"><span class="nav-number">1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#详解"><span class="nav-number">2.</span> <span class="nav-text">详解</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#cms-gc"><span class="nav-number">2.0.1.</span> <span class="nav-text">cms gc</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#full-gc"><span class="nav-number">2.0.2.</span> <span class="nav-text">full gc</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#magor-gc"><span class="nav-number">2.0.3.</span> <span class="nav-text">magor gc</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#概述"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#分布式一致性协议"><span class="nav-number">2.</span> <span class="nav-text">分布式一致性协议</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#两阶段提交协议2pc"><span class="nav-number">3.</span> <span class="nav-text">两阶段提交协议2pc</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#三阶段提交协议3pc"><span class="nav-number">4.</span> <span class="nav-text">三阶段提交协议3pc</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol></div>
             
 
           </div>
